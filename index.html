@@ -715,6 +715,17 @@
   // ---------- Init ----------
   applyTheme(localStorage.getItem(THEME_KEY));
   renderAll();
+
+  // Prečica: otvori odmah formu za novi kontakt ako link sadrži #add ili ?add
+  function maybeQuickAdd() {
+    const h = (location.hash || "").toLowerCase();
+    const s = (location.search || "").toLowerCase();
+    if (h.indexOf("add") !== -1 || s.indexOf("add") !== -1) {
+      openContactModal(null);
+    }
+  }
+  maybeQuickAdd();
+  window.addEventListener("hashchange", maybeQuickAdd);
 })();
 </script>
 </body>
