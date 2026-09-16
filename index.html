@@ -1,758 +1,903 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="sr" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Outreach CRM</title>
 <style>
+  /* ================= THEME ================= */
   :root {
-    --bg: #f5f6f8;
-    --surface: #ffffff;
-    --surface-2: #f0f2f5;
-    --border: #e2e5ea;
-    --text: #1a1d23;
-    --text-soft: #61656d;
-    --text-faint: #9aa0a8;
-    --accent: #3b6ef5;
-    --accent-soft: #e7eefe;
-    --shadow: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
-    --radius: 12px;
-    --danger: #dc2626;
-    --funnel: #3b6ef5;
+    --bg: #0a0c10;
+    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(99,102,241,.10), transparent 60%),
+               radial-gradient(900px 480px at -8% 108%, rgba(34,197,94,.05), transparent 55%);
+    --surface: #12161d; --surface-2: #171c25; --surface-3: #1d2430;
+    --border: #232b38; --border-soft: #1b222e;
+    --text: #eef1f6; --text-soft: #9aa4b2; --text-faint: #626d7d;
+    --accent: #6d8bff; --accent-2: #8b5cf6; --accent-soft: rgba(109,139,255,.14);
+    --good: #34d399; --good-soft: rgba(52,211,153,.15);
+    --warn: #fbbf24; --warn-soft: rgba(251,191,36,.15);
+    --bad: #f87171;  --bad-soft: rgba(248,113,113,.15);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.30);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --radius: 16px; --radius-sm: 11px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14161a; --surface: #1c1f26; --surface-2: #23272f;
-      --border: #2d323b; --text: #eceef1; --text-soft: #a3a9b3; --text-faint: #6b727d;
-      --accent: #5b83f7; --accent-soft: #1e2a4a; --shadow: 0 1px 3px rgba(0,0,0,.4);
-      --funnel: #5b83f7;
-    }
+  :root[data-theme="light"] {
+    --bg: #f4f6fb;
+    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(99,102,241,.09), transparent 60%),
+               radial-gradient(900px 480px at -8% 108%, rgba(34,197,94,.06), transparent 55%);
+    --surface: #ffffff; --surface-2: #f6f8fc; --surface-3: #eef1f7;
+    --border: #e3e8f0; --border-soft: #edf0f6;
+    --text: #131720; --text-soft: #5a6474; --text-faint: #97a0ae;
+    --accent: #4f6bf0; --accent-2: #7c3aed; --accent-soft: rgba(79,107,240,.10);
+    --good: #10b981; --good-soft: rgba(16,185,129,.12);
+    --warn: #d97706; --warn-soft: rgba(217,119,6,.12);
+    --bad: #dc2626; --bad-soft: rgba(220,38,38,.10);
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 10px 30px rgba(16,24,40,.08);
+    --shadow-sm: 0 1px 2px rgba(16,24,40,.05);
   }
-  :root[data-theme="dark"] {
-    --bg: #14161a; --surface: #1c1f26; --surface-2: #23272f;
-    --border: #2d323b; --text: #eceef1; --text-soft: #a3a9b3; --text-faint: #6b727d;
-    --accent: #5b83f7; --accent-soft: #1e2a4a; --shadow: 0 1px 3px rgba(0,0,0,.4);
-    --funnel: #5b83f7;
-  }
-
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased;
-  }
+  body { background: var(--bg); background-image: var(--bg-grad); background-attachment: fixed; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--accent-soft); }
+  a { color: var(--accent); }
+  .app { display: flex; min-height: 100vh; }
 
-  header.topbar {
-    position: sticky; top: 0; z-index: 30;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
-  .brand .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
-    display: grid; place-items: center; color: #fff; font-size: 16px; }
-  .topbar .spacer { flex: 1; }
+  /* ================= SIDEBAR ================= */
+  .sidebar { width: 236px; flex-shrink: 0; padding: 20px 14px; border-right: 1px solid var(--border-soft);
+    display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+  .brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 18px; }
+  .brand .logo { width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center;
+    color: #fff; font-size: 19px; box-shadow: 0 6px 18px rgba(109,139,255,.35); }
+  .brand .bt { font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
+  .brand .bs { font-size: 11px; color: var(--text-faint); font-weight: 600; }
+  .nav-group { font-size: 10.5px; font-weight: 800; color: var(--text-faint); text-transform: uppercase; letter-spacing: .8px; padding: 12px 12px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 11px; cursor: pointer;
+    color: var(--text-soft); font-weight: 600; font-size: 14px; border: 1px solid transparent;
+    transition: background .14s, color .14s, border-color .14s; user-select: none; }
+  .nav-item .ni-ico { font-size: 16px; width: 20px; text-align: center; }
+  .nav-item .ni-badge { margin-left: auto; font-size: 11px; font-weight: 800; color: var(--text-faint);
+    background: var(--surface-2); border: 1px solid var(--border-soft); padding: 1px 7px; border-radius: 20px; }
+  .nav-item:hover { background: var(--surface-2); color: var(--text); }
+  .nav-item.active { background: var(--accent-soft); color: var(--text); border-color: rgba(109,139,255,.25); }
+  .side-foot { margin-top: auto; }
 
-  .btn { appearance: none; border: 1px solid var(--border); background: var(--surface);
-    color: var(--text); padding: 8px 14px; border-radius: 9px; font-size: 13px; cursor: pointer;
-    font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: background .12s, border-color .12s; }
-  .btn:hover { background: var(--surface-2); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary:hover { filter: brightness(1.05); }
-  .btn.ghost { border-color: transparent; background: transparent; }
-  .btn.ghost:hover { background: var(--surface-2); }
-  .btn.danger { color: var(--danger); }
-  .btn.sm { padding: 5px 10px; font-size: 12px; }
+  /* ================= HEADER ================= */
+  .content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px;
+    padding: 14px clamp(16px,3vw,28px); border-bottom: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); }
+  .header h1 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.4px; white-space: nowrap; }
+  .header .spacer { flex: 1; }
+  .search-box { position: relative; display: flex; align-items: center; }
+  .search-box input { width: 230px; max-width: 42vw; padding: 9px 12px 9px 34px; border: 1px solid var(--border);
+    border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: 13px; font-family: inherit; }
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+  .search-box .si { position: absolute; left: 11px; font-size: 13px; opacity: .6; pointer-events: none; }
+  .profile { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+  .hamb { display: none; }
+  .main { padding: 22px clamp(16px,3vw,28px) 90px; max-width: 1280px; width: 100%; }
 
-  main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 80px; }
+  /* ================= BUTTONS ================= */
+  .btn { appearance: none; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    padding: 9px 14px; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 7px; transition: background .13s, border-color .13s, transform .06s; white-space: nowrap; }
+  .btn:hover { background: var(--surface-3); }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(109,139,255,.3); }
+  .btn.primary:hover { filter: brightness(1.07); }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--text-soft); }
+  .btn.ghost:hover { background: var(--surface-2); color: var(--text); }
+  .btn.sm { padding: 6px 10px; font-size: 12px; }
+  .btn.danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, var(--border)); }
+  .btn.danger:hover { background: var(--bad-soft); }
 
-  .section-title { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase;
-    letter-spacing: .4px; margin: 0 0 10px 2px; }
+  .section-label { font-size: 12px; font-weight: 800; color: var(--text-faint); text-transform: uppercase; letter-spacing: .6px;
+    margin: 26px 2px 13px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .section-label:first-child { margin-top: 2px; }
+  .section-label .sl-line { flex: 1; height: 1px; background: var(--border-soft); min-width: 20px; }
 
-  /* Funnel dashboard */
-  .funnel-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
-  .funnel { display: flex; flex-direction: column; gap: 7px; }
-  .f-row { position: relative; border-radius: 9px; overflow: hidden; background: var(--surface-2);
-    height: 44px; display: flex; align-items: center; }
-  .f-bar { position: absolute; left: 0; top: 0; bottom: 0; width: var(--pct, 0%);
-    background: var(--funnel); opacity: .16; transition: width .4s ease; }
-  .f-row:nth-child(1) .f-bar { opacity: .28; }
-  .f-content { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px;
-    width: 100%; padding: 0 14px; }
-  .f-ico { width: 22px; text-align: center; font-size: 16px; }
-  .f-label { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .f-conv { font-size: 11px; font-weight: 700; color: var(--text-faint); background: var(--surface);
-    border: 1px solid var(--border); padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
-  .f-num { font-size: 20px; font-weight: 800; min-width: 34px; text-align: right; }
+  /* ================= KPI ================= */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(172px, 1fr)); gap: 13px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 16px 14px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+  .kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--kc, var(--accent)); opacity: .85; }
+  .kpi-top { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .kpi-ico { width: 29px; height: 29px; border-radius: 9px; display: grid; place-items: center; font-size: 14px; background: color-mix(in srgb, var(--kc) 16%, transparent); }
+  .kpi-label { font-size: 12px; font-weight: 700; color: var(--text-soft); line-height: 1.2; }
+  .kpi-num { font-size: 30px; font-weight: 800; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .kpi.editing .kpi-num { display: none; }
+  .kpi-input { display: none; font-size: 26px; font-weight: 800; letter-spacing: -.5px; width: 100%; border: 1px solid var(--accent);
+    background: var(--surface-2); color: var(--text); border-radius: 8px; padding: 3px 8px; font-family: inherit; outline: none; }
+  .kpi.editing .kpi-input { display: block; }
 
-  .mini-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-  .mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 8px 14px; box-shadow: var(--shadow); }
-  .mini .n { font-size: 18px; font-weight: 700; }
-  .mini .l { font-size: 11px; color: var(--text-soft); }
-  .mini.alert .n { color: var(--danger); }
+  /* ================= CONVERSION ================= */
+  .conv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .conv { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 15px; box-shadow: var(--shadow-sm); }
+  .conv-label { font-size: 12px; color: var(--text-soft); font-weight: 700; }
+  .conv-val { font-size: 25px; font-weight: 800; letter-spacing: -.5px; margin: 7px 0 6px; font-variant-numeric: tabular-nums; }
+  .conv-bar { height: 6px; border-radius: 6px; background: var(--surface-3); overflow: hidden; }
+  .conv-bar > span { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .5s ease; }
+  .conv-frac { font-size: 11px; color: var(--text-faint); margin-top: 7px; font-variant-numeric: tabular-nums; }
 
-  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
-  .toolbar input[type="search"], .toolbar select { padding: 8px 12px; border: 1px solid var(--border);
-    border-radius: 9px; background: var(--surface); color: var(--text); font-size: 13px; }
-  .toolbar input[type="search"] { min-width: 200px; flex: 1; max-width: 320px; }
+  /* ================= PANEL / FUNNEL ================= */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+  .panel-title { font-size: 14px; font-weight: 800; margin: 0 0 3px; display: flex; align-items: center; gap: 8px; }
+  .panel-sub { font-size: 12px; color: var(--text-soft); margin-bottom: 14px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .frow { position: relative; height: 44px; border-radius: 11px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--border-soft); display: flex; align-items: center; }
+  .fbar { position: absolute; inset: 0 auto 0 0; width: var(--w,0%);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--fc) 42%, transparent), color-mix(in srgb, var(--fc) 12%, transparent)); border-right: 2px solid var(--fc); transition: width .5s ease; }
+  .fcontent { position: relative; z-index: 1; display: flex; align-items: center; gap: 11px; width: 100%; padding: 0 14px; }
+  .fico { font-size: 15px; width: 20px; text-align: center; }
+  .flabel { font-weight: 700; font-size: 13px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fconv { font-size: 11px; font-weight: 800; color: var(--text-soft); background: var(--surface); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .fnum { font-size: 18px; font-weight: 800; min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
 
-  .contacts { display: flex; flex-direction: column; gap: 10px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    box-shadow: var(--shadow); overflow: hidden; }
-  .contact-head { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; cursor: pointer; }
-  .avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
-    font-weight: 700; color: #fff; font-size: 15px; }
-  .contact-main { flex: 1; min-width: 0; }
-  .contact-name { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .contact-sub { color: var(--text-soft); font-size: 13px; margin-top: 2px; }
-  .contact-sub a { color: var(--text-soft); text-decoration: none; }
-  .contact-sub a:hover { color: var(--accent); text-decoration: underline; }
-  .contact-meta { text-align: right; flex-shrink: 0; font-size: 12px; color: var(--text-faint); }
+  /* ================= TOOLBAR / TABLE ================= */
+  .toolbar { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .toolbar select, .toolbar input { padding: 8px 11px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-2); color: var(--text); font-size: 13px; font-family: inherit; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+  table.data th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--text-faint); font-weight: 700; padding: 11px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
+  table.data td { padding: 10px 12px; border-bottom: 1px solid var(--border-soft); white-space: nowrap; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data tr:hover td { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+  .cell-check { text-align: center; font-size: 14px; }
+  .check-yes { color: var(--good); } .check-no { color: var(--text-faint); opacity: .5; }
+  .row-actions { display: flex; gap: 4px; }
+  .icon-btn { background: none; border: 1px solid transparent; border-radius: 8px; cursor: pointer; font-size: 14px; padding: 5px 7px; color: var(--text-soft); line-height: 1; }
+  .icon-btn:hover { background: var(--surface-3); color: var(--text); }
+  .icon-btn.del:hover { color: var(--bad); }
+  .lead-name { font-weight: 700; }
+  .muted { color: var(--text-faint); }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; display: inline-block; background: var(--b-soft, var(--surface-3)); color: var(--b-c, var(--text-soft)); }
 
-  .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap;
-    color: #fff; }
-  .badge.stage0 { background: #9aa0a8; }
-  .badge.dead { background: var(--danger); }
+  /* ================= KANBAN ================= */
+  .kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+  .kcol { background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 12px; min-height: 120px; display: flex; flex-direction: column; }
+  .kcol.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .kcol-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; padding: 0 3px; }
+  .kcol-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--kc); }
+  .kcol-title { font-weight: 800; font-size: 12.5px; }
+  .kcol-count { margin-left: auto; font-size: 11px; font-weight: 800; color: var(--text-faint); background: var(--surface); border: 1px solid var(--border-soft); padding: 1px 7px; border-radius: 20px; }
+  .kcards { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+  .kcard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 12px; cursor: grab; box-shadow: var(--shadow-sm); }
+  .kcard:active { cursor: grabbing; }
+  .kcard.dragging { opacity: .45; }
+  .kcard-title { font-weight: 700; font-size: 13.5px; margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .kcard-meta { font-size: 11.5px; color: var(--text-soft); display: flex; flex-direction: column; gap: 2px; }
+  .kcard-actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 9px; }
+  .qa { border: 1px solid var(--border-soft); background: var(--surface-2); border-radius: 7px; font-size: 12px; cursor: pointer; padding: 3px 7px; color: var(--text-soft); line-height: 1.2; }
+  .qa:hover { background: var(--surface-3); color: var(--text); }
+  .kcol-empty { font-size: 12px; color: var(--text-faint); text-align: center; padding: 14px 6px; border: 1px dashed var(--border-soft); border-radius: 10px; }
 
-  .followup-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; margin-top: 4px; }
-  .followup-pill.due { color: var(--danger); }
-  .followup-pill.today { color: #d97706; }
-  .followup-pill.upcoming { color: var(--text-soft); }
+  /* ================= SUMMARY ================= */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 13px; }
+  .sumcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 16px; box-shadow: var(--shadow-sm); }
+  .sumcard.hero { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), var(--surface)); }
+  .sumcard.good { background: linear-gradient(135deg, color-mix(in srgb, var(--good) 20%, var(--surface)), var(--surface)); }
+  .sum-label { font-size: 11.5px; color: var(--text-soft); font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .sum-val { font-size: 27px; font-weight: 800; letter-spacing: -1px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .sum-note { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
 
-  .contact-body { border-top: 1px solid var(--border); display: none; }
-  .card.open .contact-body { display: block; }
-  .contact-body-inner { padding: 14px 16px; }
-
-  /* Stage chips (funnel progress control) */
-  .stage-track { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .stage-chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-soft);
-    padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 5px; transition: all .12s; }
-  .stage-chip:hover { border-color: var(--funnel); }
-  .stage-chip.reached { background: var(--funnel); border-color: var(--funnel); color: #fff; }
-  .stage-chip .num { opacity: .7; font-weight: 800; }
-
-  .quick-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-
-  .activity-list { display: flex; flex-direction: column; gap: 0; }
-  .activity { display: flex; gap: 12px; padding: 10px 0; border-top: 1px dashed var(--border); }
-  .activity:first-child { border-top: none; }
-  .act-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
-    font-size: 15px; background: var(--surface-2); }
-  .act-body { flex: 1; min-width: 0; }
-  .act-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-  .act-type { font-weight: 600; font-size: 13px; }
-  .act-date { color: var(--text-faint); font-size: 12px; white-space: nowrap; }
-  .act-outcome { font-size: 12px; color: var(--text-soft); }
-  .act-note { font-size: 13px; margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
-  .act-del { color: var(--text-faint); background: none; border: none; cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: 6px; }
-  .act-del:hover { color: var(--danger); background: var(--surface-2); }
-
-  .empty { text-align: center; color: var(--text-faint); padding: 60px 20px; }
-  .empty .big { font-size: 40px; margin-bottom: 10px; }
-
-  .overlay { position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 50; display: none;
-    align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
+  /* ================= MODAL ================= */
+  .overlay { position: fixed; inset: 0; background: rgba(4,7,12,.62); z-index: 60; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
   .overlay.show { display: flex; }
-  .modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 520px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.3); border: 1px solid var(--border); }
+  .modal { background: var(--surface); border-radius: 18px; width: 100%; max-width: 560px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .modal.sm { max-width: 420px; }
   .modal-head { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .modal-head h3 { margin: 0; font-size: 17px; }
   .modal-body { padding: 20px; }
-  .modal-foot { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-soft); margin-bottom: 5px; }
-  .field input, .field select, .field textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border);
-    border-radius: 9px; background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; }
-  .field textarea { resize: vertical; min-height: 70px; }
-  .field.check { display: flex; align-items: center; gap: 8px; }
-  .field.check input { width: auto; }
-  .field.check label { margin: 0; }
-  .field-row { display: flex; gap: 12px; }
-  .field-row .field { flex: 1; }
+  .modal-foot { padding: 15px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
   .close-x { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-faint); line-height: 1; }
   .close-x:hover { color: var(--text); }
-  .hint { font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+  .field { margin-bottom: 13px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-soft); margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-2); color: var(--text); font-size: 14px; font-family: inherit; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 66px; }
+  .field-row { display: flex; gap: 12px; } .field-row .field { flex: 1; }
+  .checks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .chk { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-2); cursor: pointer; font-size: 13px; font-weight: 600; }
+  .chk input { width: auto; }
+  .empty { text-align: center; color: var(--text-faint); padding: 50px 20px; }
+  .empty .big { font-size: 38px; margin-bottom: 8px; }
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface-3); border: 1px solid var(--border); color: var(--text); padding: 11px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: var(--shadow); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .view { display: none; } .view.active { display: block; animation: fade .22s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg button { border: none; background: transparent; color: var(--text-soft); font-weight: 700; font-size: 12.5px; padding: 6px 12px; border-radius: 7px; cursor: pointer; }
+  .seg button.on { background: var(--accent-soft); color: var(--text); }
+  .settings-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; }
+  .setrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 17px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .setrow .st { font-weight: 700; font-size: 14px; } .setrow .ss { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
 
-  @media (max-width: 560px) {
-    .contact-meta { display: none; }
-    .field-row { flex-direction: column; gap: 0; }
-    .brand span.name { display: none; }
-    .f-conv { display: none; }
+  @media (max-width: 860px) {
+    .sidebar { position: fixed; left: 0; top: 0; z-index: 70; transform: translateX(-100%); transition: transform .22s ease; background: var(--surface); box-shadow: var(--shadow); }
+    .sidebar.open { transform: translateX(0); }
+    .scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 65; }
+    .scrim.show { display: block; }
+    .hamb { display: inline-flex; }
+    .two-col { grid-template-columns: 1fr; }
+    .header h1 { font-size: 17px; } .search-box input { width: 150px; } .header .hide-sm { display: none; }
+  }
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .kpi-num { font-size: 25px; }
+    .checks-grid { grid-template-columns: 1fr; } .field-row { flex-direction: column; gap: 0; } .search-box { display: none; }
   }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><div class="logo">📇</div><span class="name">Outreach CRM</span></div>
-  <div class="spacer"></div>
-  <button class="btn ghost sm" id="themeBtn" title="Tema">🌓</button>
-  <button class="btn ghost sm" id="exportBtn" title="Izvezi podatke">⬇ Backup</button>
-  <button class="btn ghost sm" id="importBtn" title="Uvezi podatke">⬆ Uvoz</button>
-  <button class="btn ghost sm" id="csvBtn" title="CSV izveštaj">📄 CSV</button>
-  <button class="btn primary" id="addContactBtn">+ Novi kontakt</button>
-</header>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="logo">◈</div><div><div class="bt">Outreach CRM</div><div class="bs">Leadovi &amp; prodaja</div></div></div>
+    <div class="nav-group">CRM</div>
+    <div class="nav-item" data-view="dash"><span class="ni-ico">📊</span> Dashboard</div>
+    <div class="nav-item" data-view="message"><span class="ni-ico">💬</span> Message Outreach</div>
+    <div class="nav-item" data-view="cold"><span class="ni-ico">📞</span> Cold Calling</div>
+    <div class="nav-item" data-view="prospects"><span class="ni-ico">🏢</span> Prospekti <span class="ni-badge" id="navProspectCount">0</span></div>
+    <div class="side-foot"><div class="nav-item" data-view="settings"><span class="ni-ico">⚙️</span> Settings</div></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
 
-<main>
-  <div class="section-title">Levak (funnel)</div>
-  <div class="funnel-wrap"><div class="funnel" id="funnel"></div></div>
-  <div class="mini-stats" id="miniStats"></div>
+  <div class="content">
+    <header class="header">
+      <button class="btn ghost hamb" id="hambBtn" aria-label="Meni">☰</button>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="spacer"></div>
+      <div class="search-box"><span class="si">🔍</span><input type="search" id="globalSearch" placeholder="Pretraži…" /></div>
+      <button class="btn primary" id="addProspectBtn">+ <span class="hide-sm">Dodaj prospekt</span></button>
+      <div class="profile" id="profileBtn" title="Settings">JA</div>
+    </header>
 
-  <div class="toolbar">
-    <input type="search" id="search" placeholder="🔍 Pretraži ime, firmu, telefon…" />
-    <select id="filterStage">
-      <option value="">Svi kontakti</option>
-      <option value="s1">Dostigli: Poslata poruka</option>
-      <option value="s2">Dostigli: Odgovorio</option>
-      <option value="s3">Dostigli: Prihvatio da vidi sajt</option>
-      <option value="s4">Dostigli: Pozitivan utisak</option>
-      <option value="s5">Dostigli: Zakazan poziv</option>
-      <option value="s6">Dostigli: Održan poziv</option>
-      <option value="s7">Dostigli: Prodaja</option>
-      <option value="dead">Odbijeni / nezainteresovani</option>
-    </select>
-    <select id="sortBy">
-      <option value="stage">Sortiraj: Faza (najdalji prvi)</option>
-      <option value="followup">Sortiraj: Follow-up</option>
-      <option value="recent">Sortiraj: Poslednja aktivnost</option>
-      <option value="name">Sortiraj: Ime (A-Š)</option>
-      <option value="created">Sortiraj: Novi kontakti</option>
-    </select>
-    <label class="btn ghost sm" style="cursor:pointer;"><input type="checkbox" id="onlyDue" style="margin-right:6px;">Samo dospeli</label>
-  </div>
-
-  <div class="contacts" id="contacts"></div>
-</main>
-
-<!-- Contact modal -->
-<div class="overlay" id="contactOverlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="contactModalTitle">Novi kontakt</h3>
-      <button class="close-x" data-close>×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="c_id" />
-      <div class="field-row">
-        <div class="field"><label>Ime i prezime *</label><input id="c_name" placeholder="Petar Petrović" /></div>
-        <div class="field"><label>Firma</label><input id="c_company" placeholder="Firma d.o.o." /></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Telefon</label><input id="c_phone" placeholder="+381 6x xxx xxxx" /></div>
-        <div class="field"><label>Email</label><input id="c_email" placeholder="email@primer.rs" /></div>
-      </div>
-      <div class="field">
-        <label>Faza u levku (dokle se stiglo)</label>
-        <select id="c_stage">
-          <option value="0">— još ništa —</option>
-          <option value="1">1 · Poslata poruka</option>
-          <option value="2">2 · Odgovorio</option>
-          <option value="3">3 · Prihvatio da vidi sajt</option>
-          <option value="4">4 · Pozitivan utisak</option>
-          <option value="5">5 · Zakazan poziv</option>
-          <option value="6">6 · Održan poziv</option>
-          <option value="7">7 · Prodaja</option>
-        </select>
-        <div class="hint">Levak je redosledan: izbor faze podrazumeva da su prethodne već prošle.</div>
-      </div>
-      <div class="field"><label>Izvor</label><input id="c_source" placeholder="Instagram, preporuka…" /></div>
-      <div class="field"><label>Sledeći follow-up</label><input type="date" id="c_followup" /></div>
-      <div class="field check"><input type="checkbox" id="c_dead" /><label for="c_dead">Odbijen / nezainteresovan</label></div>
-      <div class="field"><label>Napomena</label><textarea id="c_notes" placeholder="Kratka beleška o kontaktu…"></textarea></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn danger" id="deleteContactBtn" style="margin-right:auto; display:none;">Obriši</button>
-      <button class="btn" data-close>Otkaži</button>
-      <button class="btn primary" id="saveContactBtn">Sačuvaj</button>
-    </div>
-  </div>
-</div>
-
-<!-- Activity modal -->
-<div class="overlay" id="activityOverlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="activityModalTitle">Nova aktivnost</h3>
-      <button class="close-x" data-close-act>×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="a_contactId" />
-      <div class="field-row">
-        <div class="field"><label>Tip</label>
-          <select id="a_type">
-            <option value="poziv">📞 Poziv</option>
-            <option value="poruka">💬 Poruka</option>
-            <option value="email">✉️ Email</option>
-            <option value="sastanak">🤝 Sastanak</option>
-            <option value="beleska">📝 Beleška</option>
-          </select>
+    <main class="main">
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dash">
+        <div class="section-label">Kombinovani pregled <span class="sl-line"></span></div>
+        <div class="summary-grid" id="dashSummary"></div>
+        <div class="section-label">💬 Message Outreach <span class="sl-line"></span></div>
+        <div class="kpi-grid" id="dashMsgKpis"></div>
+        <div style="height:13px"></div>
+        <div class="conv-grid" id="dashMsgConv"></div>
+        <div class="section-label">📞 Cold Calling <span class="sl-line"></span></div>
+        <div class="kpi-grid" id="dashColdKpis"></div>
+        <div style="height:13px"></div>
+        <div class="conv-grid" id="dashColdConv"></div>
+        <div class="section-label">Levci (funnel) <span class="sl-line"></span></div>
+        <div class="two-col">
+          <div class="panel"><div class="panel-title">💬 Message funnel</div><div class="panel-sub">Od poruke do prodaje</div><div class="funnel" id="dashMsgFunnel"></div></div>
+          <div class="panel"><div class="panel-title">📞 Cold calling funnel</div><div class="panel-sub">Od prospekta do prodaje</div><div class="funnel" id="dashColdFunnel"></div></div>
         </div>
-        <div class="field"><label>Datum</label><input type="datetime-local" id="a_date" /></div>
-      </div>
-      <div class="field"><label>Ishod</label>
-        <select id="a_outcome">
-          <option value="">— bez ishoda —</option>
-          <option value="Javio se">Javio se</option>
-          <option value="Nije se javio">Nije se javio</option>
-          <option value="Poslato">Poslato</option>
-          <option value="Odgovorio">Odgovorio</option>
-          <option value="Zainteresovan">Zainteresovan</option>
-          <option value="Zakazano">Zakazano</option>
-          <option value="Održan poziv">Održan poziv</option>
-          <option value="Prodaja">Prodaja</option>
-          <option value="Odbio">Odbio</option>
-          <option value="Pozvati kasnije">Pozvati kasnije</option>
-        </select>
-      </div>
-      <div class="field"><label>Beleška</label><textarea id="a_note" placeholder="Šta je dogovoreno / rečeno…"></textarea></div>
-      <div class="field"><label>Zakaži sledeći follow-up (opciono)</label><input type="date" id="a_nextFollowup" />
-        <div class="hint">Ako uneseš datum, ažuriraće se follow-up ovog kontakta.</div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" data-close-act>Otkaži</button>
-      <button class="btn primary" id="saveActivityBtn">Sačuvaj aktivnost</button>
-    </div>
+      </section>
+
+      <!-- MESSAGE -->
+      <section class="view" id="view-message">
+        <div class="section-label">Outreach metrike <span class="sl-line"></span>
+          <span class="seg" id="metricMode"><button data-mode="manual">Manual</button><button data-mode="calculated">Iz leadova</button></span>
+          <button class="btn sm" id="editMetricsBtn">✏️ Edit Metrics</button>
+          <button class="btn sm primary" id="saveMetricsBtn" style="display:none">✔ Save</button>
+        </div>
+        <div class="kpi-grid" id="msgKpis"></div>
+        <div class="section-label">Conversion rates <span class="sl-line"></span></div>
+        <div class="conv-grid" id="msgConv"></div>
+        <div class="section-label">Leadovi (pojedinačni kontakti) <span class="sl-line"></span><button class="btn sm primary" id="addLeadBtn">+ Novi lead</button></div>
+        <div class="toolbar">
+          <select id="leadFilterStatus"><option value="">Svi statusi</option></select>
+          <select id="leadFilterPlatform"><option value="">Sve platforme</option></select>
+          <select id="leadSort"><option value="date_desc">Datum: najnoviji</option><option value="date_asc">Datum: najstariji</option><option value="name">Ime (A-Š)</option></select>
+        </div>
+        <div class="table-wrap" id="leadsTableWrap"></div>
+      </section>
+
+      <!-- COLD -->
+      <section class="view" id="view-cold">
+        <div class="section-label">Cold calling metrike (automatski iz prospekata) <span class="sl-line"></span></div>
+        <div class="kpi-grid" id="coldKpis"></div>
+        <div class="section-label">Conversion rates <span class="sl-line"></span></div>
+        <div class="conv-grid" id="coldConv"></div>
+        <div class="section-label">Pipeline (Kanban — prevuci karticu da promeniš status) <span class="sl-line"></span><button class="btn sm primary" id="addProspectBtn2">+ Dodaj prospekt</button></div>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- PROSPECTS -->
+      <section class="view" id="view-prospects">
+        <div class="section-label">Prospekti — baza firmi <span class="sl-line"></span><button class="btn sm primary" id="addProspectBtn3">+ Dodaj prospekt</button></div>
+        <div class="toolbar">
+          <select id="prospFilterStatus"><option value="">Svi statusi</option></select>
+          <select id="prospFilterDate"><option value="">Sav period</option><option value="7">Poslednjih 7 dana</option><option value="30">Poslednjih 30 dana</option><option value="90">Poslednjih 90 dana</option></select>
+          <select id="prospSort"><option value="date_desc">Najnoviji prvo</option><option value="date_asc">Najstariji prvo</option><option value="name">Naziv (A-Š)</option></select>
+        </div>
+        <div class="table-wrap" id="prospectsTableWrap"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="section-label">Podešavanja <span class="sl-line"></span></div>
+        <div class="settings-list">
+          <div class="setrow"><div><div class="st">Tema</div><div class="ss">Tamna je podrazumevana.</div></div>
+            <span class="seg" id="themeSeg"><button data-theme="dark">🌙 Tamna</button><button data-theme="light">☀️ Svetla</button></span></div>
+          <div class="setrow"><div><div class="st">Valuta</div><div class="ss">Prikaz revenue-a i vrednosti prodaje.</div></div>
+            <select id="currencySelect" style="padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:13px;">
+              <option value="€">€ EUR</option><option value="RSD">RSD</option><option value="$">$ USD</option><option value="£">£ GBP</option></select></div>
+          <div class="setrow"><div><div class="st">Export podataka</div><div class="ss">Preuzmi kopiju svih podataka.</div></div>
+            <div style="display:flex;gap:8px;"><button class="btn sm" id="exportJsonBtn">JSON</button><button class="btn sm" id="exportCsvBtn">CSV</button></div></div>
+          <div class="setrow"><div><div class="st">Import podataka</div><div class="ss">Učitaj prethodno exportovan JSON.</div></div>
+            <button class="btn sm" id="importBtn">⬆ Uvezi JSON</button></div>
+          <div class="setrow"><div><div class="st">Testni podaci</div><div class="ss">Obriši samo demo primere, zadrži svoje unose.</div></div>
+            <button class="btn sm" id="clearDemoBtn">🧹 Obriši testne</button></div>
+          <div class="setrow"><div><div class="st" style="color:var(--bad)">Reset svih podataka</div><div class="ss">Briše sve leadove, prospekte i metrike.</div></div>
+            <button class="btn sm danger" id="resetBtn">🗑 Obriši sve</button></div>
+        </div>
+      </section>
+    </main>
   </div>
 </div>
+
+<!-- PROSPECT MODAL -->
+<div class="overlay" id="prospectOverlay"><div class="modal">
+  <div class="modal-head"><h3 id="prospectModalTitle">Dodaj prospekt</h3><button class="close-x" data-close-prospect>×</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="p_id" />
+    <div class="field-row"><div class="field"><label>Naziv firme *</label><input id="p_company" placeholder="Restoran Kod Mike" /></div><div class="field"><label>Kontakt osoba</label><input id="p_person" placeholder="Marko (opciono)" /></div></div>
+    <div class="field-row"><div class="field"><label>Telefon</label><input id="p_phone" placeholder="+381 6x xxx xxxx" /></div><div class="field"><label>Email</label><input id="p_email" placeholder="email@firma.rs (opciono)" /></div></div>
+    <div class="field-row"><div class="field"><label>Google Maps URL</label><input id="p_maps" placeholder="https://maps.google.com/…" /></div><div class="field"><label>Website</label><input id="p_website" placeholder="https://…" /></div></div>
+    <div class="field-row"><div class="field"><label>Lokacija</label><input id="p_location" placeholder="Kragujevac, centar" /></div><div class="field"><label>Status</label><select id="p_status"></select></div></div>
+    <div class="field" id="p_dealWrap" style="display:none;"><label>Vrednost posla (Won)</label><input type="number" id="p_deal" min="0" step="10" placeholder="npr. 500" /></div>
+    <div class="field"><label>Beleške</label><textarea id="p_notes" placeholder="Kratka beleška…"></textarea></div>
+  </div>
+  <div class="modal-foot"><button class="btn danger" id="deleteProspectBtn" style="margin-right:auto;display:none;">Obriši</button><button class="btn" data-close-prospect>Otkaži</button><button class="btn primary" id="saveProspectBtn">Sačuvaj</button></div>
+</div></div>
+
+<!-- LEAD MODAL -->
+<div class="overlay" id="leadOverlay"><div class="modal">
+  <div class="modal-head"><h3 id="leadModalTitle">Novi lead</h3><button class="close-x" data-close-lead>×</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="l_id" />
+    <div class="field-row"><div class="field"><label>Ime *</label><input id="l_name" placeholder="Petar Petrović" /></div><div class="field"><label>Naziv firme</label><input id="l_company" placeholder="Firma d.o.o." /></div></div>
+    <div class="field-row"><div class="field"><label>Platforma</label><select id="l_platform"><option>Instagram</option><option>Facebook</option><option>Email</option><option>LinkedIn</option><option>WhatsApp</option><option>TikTok</option><option>Drugo</option></select></div><div class="field"><label>Kontakt (handle/telefon/email)</label><input id="l_contact" placeholder="@nalog ili email" /></div></div>
+    <div class="field-row"><div class="field"><label>Datum kontakta</label><input type="date" id="l_date" /></div><div class="field"><label>Status</label><select id="l_status"></select></div></div>
+    <label style="display:block;font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:6px;">Faze (čekiraj šta je odrađeno)</label>
+    <div class="checks-grid" style="margin-bottom:13px;">
+      <label class="chk"><input type="checkbox" id="l_sent"> Poruka poslata</label>
+      <label class="chk"><input type="checkbox" id="l_replied"> Odgovorio</label>
+      <label class="chk"><input type="checkbox" id="l_site"> Prihvatio da vidi sajt</label>
+      <label class="chk"><input type="checkbox" id="l_positive"> Pozitivan utisak</label>
+      <label class="chk"><input type="checkbox" id="l_booked"> Poziv zakazan</label>
+      <label class="chk"><input type="checkbox" id="l_held"> Poziv održan</label>
+      <label class="chk"><input type="checkbox" id="l_sale"> Prodaja</label>
+    </div>
+    <div class="field" id="l_dealWrap" style="display:none;"><label>Vrednost posla (Won)</label><input type="number" id="l_deal" min="0" step="10" placeholder="npr. 400" /></div>
+    <div class="field"><label>Beleške</label><textarea id="l_notes" placeholder="Beleška o leadu…"></textarea></div>
+  </div>
+  <div class="modal-foot"><button class="btn danger" id="deleteLeadBtn" style="margin-right:auto;display:none;">Obriši</button><button class="btn" data-close-lead>Otkaži</button><button class="btn primary" id="saveLeadBtn">Sačuvaj</button></div>
+</div></div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="confirmOverlay"><div class="modal sm">
+  <div class="modal-head"><h3 id="confirmTitle">Potvrda</h3><button class="close-x" data-close-confirm>×</button></div>
+  <div class="modal-body"><p id="confirmMsg" style="margin:0;color:var(--text-soft);"></p></div>
+  <div class="modal-foot"><button class="btn" data-close-confirm>Otkaži</button><button class="btn danger" id="confirmOkBtn">Potvrdi</button></div>
+</div></div>
 
 <input type="file" id="importFile" accept="application/json" style="display:none;" />
+<div class="toast" id="toast"></div>
 
 <script>
 (function () {
   "use strict";
+  const KEY = "outreach_crm_v2";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const num = (v) => { const n = parseInt(v, 10); return isFinite(n) && n > 0 ? n : 0; };
+  const numF = (v) => { const n = parseFloat(v); return isFinite(n) && n > 0 ? n : 0; };
+  const pct = (a, b) => b > 0 ? Math.round((a / b) * 1000) / 10 : null;
+  const fmtPct = (a, b) => { const p = pct(a, b); return p === null ? "—" : p + "%"; };
+  const fmtNum = (n) => (n || 0).toLocaleString("sr-RS");
 
-  const KEY = "outreach_crm_v1";
-  const THEME_KEY = "outreach_crm_theme";
-
-  // Redosledan levak (funnel). key = faza (1..7).
-  const STAGES = [
-    { key: 1, icon: "✉️", short: "Poruka",   plural: "Poslate poruke" },
-    { key: 2, icon: "↩️", short: "Odgovor",  plural: "Odgovori" },
-    { key: 3, icon: "🌐", short: "Vidi sajt", plural: "Prihvatili da vide sajt" },
-    { key: 4, icon: "👍", short: "Utisak",   plural: "Pozitivni utisci" },
-    { key: 5, icon: "📅", short: "Zakazan",  plural: "Zakazani pozivi" },
-    { key: 6, icon: "📞", short: "Održan",   plural: "Održani pozivi" },
-    { key: 7, icon: "💰", short: "Prodaja",  plural: "Prodaje" },
+  // ---------- Statuses ----------
+  const LEAD_STATUSES = [
+    { key: "nije", label: "Nije kontaktiran", c: "var(--text-soft)", bg: "var(--surface-3)" },
+    { key: "kontaktiran", label: "Kontaktiran", c: "#60a5fa", bg: "rgba(96,165,250,.15)" },
+    { key: "odgovorio", label: "Odgovorio", c: "#22d3ee", bg: "rgba(34,211,238,.15)" },
+    { key: "sajt", label: "Prihvatio da pogleda sajt", c: "#818cf8", bg: "rgba(129,140,248,.15)" },
+    { key: "pozitivan", label: "Pozitivan", c: "#a78bfa", bg: "rgba(167,139,250,.15)" },
+    { key: "zakazan", label: "Poziv zakazan", c: "var(--warn)", bg: "var(--warn-soft)" },
+    { key: "odrzan", label: "Poziv održan", c: "#2dd4bf", bg: "rgba(45,212,191,.15)" },
+    { key: "won", label: "Won", c: "var(--good)", bg: "var(--good-soft)" },
+    { key: "lost", label: "Lost", c: "var(--bad)", bg: "var(--bad-soft)" },
   ];
-  const STAGE_LABEL = { 0:"Nov", 1:"Poslata poruka", 2:"Odgovorio", 3:"Prihvatio da vidi sajt",
-    4:"Pozitivan utisak", 5:"Zakazan poziv", 6:"Održan poziv", 7:"Prodaja" };
-  // boja po fazi (hue skala plava -> zelena)
-  const STAGE_COLOR = { 1:"#6b7280", 2:"#2563eb", 3:"#0891b2", 4:"#7c3aed", 5:"#d97706", 6:"#0d9488", 7:"#059669" };
+  const PROSPECT_STATUSES = [
+    { key: "prospekt", label: "Prospekt", c: "var(--text-soft)", bg: "var(--surface-3)", kc: "#8892a0" },
+    { key: "kontaktiran", label: "Kontaktiran", c: "#60a5fa", bg: "rgba(96,165,250,.15)", kc: "#60a5fa" },
+    { key: "zainteresovan", label: "Zainteresovan", c: "var(--warn)", bg: "var(--warn-soft)", kc: "#fbbf24" },
+    { key: "ponuda", label: "Poslata ponuda", c: "#a78bfa", bg: "rgba(167,139,250,.15)", kc: "#a78bfa" },
+    { key: "won", label: "Won", c: "var(--good)", bg: "var(--good-soft)", kc: "#34d399" },
+    { key: "odbijen", label: "Odbijen", c: "var(--bad)", bg: "var(--bad-soft)", kc: "#f87171" },
+  ];
+  const leadStatus = (k) => LEAD_STATUSES.find(s => s.key === k) || LEAD_STATUSES[0];
+  const prospStatus = (k) => PROSPECT_STATUSES.find(s => s.key === k) || PROSPECT_STATUSES[0];
 
-  const TYPE_ICONS = { poziv: "📞", poruka: "💬", email: "✉️", sastanak: "🤝", beleska: "📝" };
-  const TYPE_LABELS = { poziv: "Poziv", poruka: "Poruka", email: "Email", sastanak: "Sastanak", beleska: "Beleška" };
-  const AVATAR_COLORS = ["#3b6ef5","#7c3aed","#059669","#d97706","#dc2626","#0891b2","#db2777","#65a30d"];
+  // ---------- Metric configs ----------
+  const MSG_METRICS = [
+    { key: "sent",     label: "Poslate poruke",          icon: "✉️", c: "#6d8bff" },
+    { key: "replies",  label: "Odgovori",                icon: "↩️", c: "#60a5fa" },
+    { key: "accepted", label: "Prihvatili da vide sajt", icon: "🌐", c: "#22d3ee" },
+    { key: "positive", label: "Pozitivni utisci",        icon: "👍", c: "#a78bfa" },
+    { key: "booked",   label: "Zakazani pozivi",         icon: "📅", c: "#fbbf24" },
+    { key: "held",     label: "Održani pozivi",          icon: "📞", c: "#2dd4bf" },
+    { key: "won",      label: "Prodaje / Won",           icon: "💰", c: "#34d399" },
+  ];
+  const MSG_CONV = [
+    { label: "Reply Rate",               num: "replies",  den: "sent" },
+    { label: "Website Acceptance Rate",  num: "accepted", den: "replies" },
+    { label: "Positive Feedback Rate",   num: "positive", den: "accepted" },
+    { label: "Call Booking Rate",        num: "booked",   den: "positive" },
+    { label: "Call Show Rate",           num: "held",     den: "booked" },
+    { label: "Close Rate",               num: "won",      den: "held" },
+    { label: "Overall Outreach-to-Sale", num: "won",      den: "sent" },
+  ];
+  const COLD_METRICS = [
+    { key: "total",      label: "Ukupno prospekata", icon: "🏢", c: "#6d8bff" },
+    { key: "contacted",  label: "Kontaktirani",      icon: "☎️", c: "#60a5fa" },
+    { key: "interested", label: "Zainteresovani",    icon: "🔥", c: "#fbbf24" },
+    { key: "offers",     label: "Poslate ponude",    icon: "📤", c: "#a78bfa" },
+    { key: "won",        label: "Won",               icon: "✅", c: "#34d399" },
+    { key: "rejected",   label: "Odbijeni",          icon: "❌", c: "#f87171" },
+  ];
+  const COLD_CONV = [
+    { label: "Contact Rate",  num: "contacted",  den: "total" },
+    { label: "Interest Rate", num: "interested", den: "contacted" },
+    { label: "Offer Rate",    num: "offers",     den: "interested" },
+    { label: "Close Rate",    num: "won",        den: "offers" },
+  ];
+  const COLD_FUNNEL = [
+    { key: "total",      label: "Prospekti",      icon: "🏢", c: "#6d8bff" },
+    { key: "contacted",  label: "Kontaktirani",   icon: "☎️", c: "#60a5fa" },
+    { key: "interested", label: "Zainteresovani", icon: "🔥", c: "#fbbf24" },
+    { key: "offers",     label: "Poslate ponude", icon: "📤", c: "#a78bfa" },
+    { key: "won",        label: "Won",            icon: "✅", c: "#34d399" },
+  ];
+
+  // ---------- State ----------
+  function defaultState() {
+    return { version: 2, settings: { theme: "dark", currency: "€", metricMode: "manual" },
+      messageMetrics: { sent: 0, replies: 0, accepted: 0, positive: 0, booked: 0, held: 0, won: 0 },
+      leads: [], prospects: [], seeded: false };
+  }
+  function normLead(l) {
+    return { id: l.id || uid(), name: l.name || "", company: l.company || "", platform: l.platform || "Instagram",
+      contact: l.contact || "", date: l.date || "", sent: !!l.sent, replied: !!l.replied, site: !!l.site,
+      positive: !!l.positive, booked: !!l.booked, held: !!l.held, sale: !!l.sale, notes: l.notes || "",
+      status: l.status || "nije", deal: numF(l.deal), demo: !!l.demo, createdAt: l.createdAt || Date.now() };
+  }
+  function normProspect(p) {
+    return { id: p.id || uid(), company: p.company || "", person: p.person || "", phone: p.phone || "",
+      email: p.email || "", maps: p.maps || "", website: p.website || "", location: p.location || "",
+      date: p.date || new Date().toISOString().slice(0, 10), notes: p.notes || "", status: p.status || "prospekt",
+      deal: numF(p.deal), demo: !!p.demo, createdAt: p.createdAt || Date.now() };
+  }
+  function normalize(d) {
+    const s = defaultState(); if (!d) return s;
+    Object.assign(s.settings, d.settings || {});
+    if (d.messageMetrics) Object.keys(s.messageMetrics).forEach(k => s.messageMetrics[k] = num(d.messageMetrics[k]));
+    s.leads = Array.isArray(d.leads) ? d.leads.map(normLead) : [];
+    s.prospects = Array.isArray(d.prospects) ? d.prospects.map(normProspect) : [];
+    s.seeded = !!d.seeded; return s;
+  }
+  function load() { try { const raw = localStorage.getItem(KEY); if (raw) return normalize(JSON.parse(raw)); } catch (e) {} return null; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast("Greška pri čuvanju."); } }
 
   let state = load();
-  migrateAll();
+  let firstRun = false;
+  if (!state) { state = defaultState(); seed(); firstRun = true; save(); }
 
-  // ---------- Persistence ----------
-  function load() {
-    try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch (e) {}
-    return { contacts: [] };
+  function seed() {
+    state.messageMetrics = { sent: 240, replies: 71, accepted: 44, positive: 27, booked: 14, held: 9, won: 4 };
+    const dAgo = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+    state.leads = [
+      { name: "Ivana Jovanović", company: "Cvećara Lala", platform: "Instagram", contact: "@cvecara_lala", date: dAgo(2), sent: true, replied: true, site: true, positive: true, booked: true, held: false, sale: false, status: "zakazan", notes: "Traži moderan sajt sa online porudžbinom.", demo: true },
+      { name: "Nikola Marković", company: "Auto servis NM", platform: "Facebook", contact: "auto.nm@gmail.com", date: dAgo(5), sent: true, replied: true, site: true, positive: true, booked: true, held: true, sale: true, status: "won", deal: 450, notes: "Zatvoreno! Landing + booking forma.", demo: true },
+      { name: "Sara Đorđević", company: "Studio Sara", platform: "Instagram", contact: "@studio.sara", date: dAgo(1), sent: true, replied: true, site: false, positive: false, booked: false, held: false, sale: false, status: "odgovorio", notes: "Odgovorila, čekam da pošaljem portfolio.", demo: true },
+      { name: "Marko Ilić", company: "Teretana Titan", platform: "Email", contact: "info@titan.rs", date: dAgo(8), sent: true, replied: false, site: false, positive: false, booked: false, held: false, sale: false, status: "kontaktiran", notes: "Poslata prva poruka, bez odgovora.", demo: true },
+    ].map(normLead);
+    state.prospects = [
+      { company: "Restoran Stara Vodenica", person: "Dragan", phone: "+381641234567", maps: "https://maps.google.com/?q=Stara+Vodenica", location: "Kragujevac, centar", date: dAgo(1), status: "prospekt", notes: "Nemaju sajt, samo FB stranu.", demo: true },
+      { company: "Pekara Zlatno Zrno", person: "Milica", phone: "+381652345678", email: "pekara@zrno.rs", maps: "https://maps.google.com/?q=Zlatno+Zrno", location: "Kragujevac, Aerodrom", date: dAgo(3), status: "kontaktiran", notes: "Zvao, javiće se sutra.", demo: true },
+      { company: "Frizerski salon Bella", person: "Ana", phone: "+381663456789", maps: "https://maps.google.com/?q=Salon+Bella", website: "https://bella-staro.rs", location: "Beograd, Vračar", date: dAgo(4), status: "zainteresovan", notes: "Zainteresovana, stari sajt je loš.", demo: true },
+      { company: "Stomatologija Dent+", person: "Dr Petrović", phone: "+381667778899", email: "ordinacija@dentplus.rs", maps: "https://maps.google.com/?q=Dent+Plus", location: "Novi Sad", date: dAgo(6), status: "ponuda", notes: "Poslata ponuda 600€, čeka odgovor.", demo: true },
+      { company: "Cvećara Orhideja", person: "Jelena", phone: "+381691112233", maps: "https://maps.google.com/?q=Orhideja", location: "Kragujevac", date: dAgo(10), status: "won", notes: "Ugovoreno! Sajt + Instagram setup.", demo: true, deal: 380 },
+      { company: "Kafić Kaldrma", phone: "+381603334455", maps: "https://maps.google.com/?q=Kaldrma", website: "https://kaldrma.rs", location: "Beograd", date: dAgo(9), status: "odbijen", notes: "Zadovoljni postojećim sajtom.", demo: true },
+    ].map(normProspect);
+    state.seeded = true;
   }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); }
-    catch (e) { alert("Greška pri čuvanju (možda je memorija browsera puna)."); }
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200); }
+
+  // ---------- Derived ----------
+  function calcMessageMetrics() {
+    const c = { sent: 0, replies: 0, accepted: 0, positive: 0, booked: 0, held: 0, won: 0 };
+    for (const l of state.leads) { if (l.sent) c.sent++; if (l.replied) c.replies++; if (l.site) c.accepted++; if (l.positive) c.positive++; if (l.booked) c.booked++; if (l.held) c.held++; if (l.sale) c.won++; }
+    return c;
   }
-  function migrateAll() {
-    if (!state || !Array.isArray(state.contacts)) state = { contacts: [] };
-    for (const c of state.contacts) {
-      if (typeof c.stage !== "number") {
-        const map = { nov: 0, kontaktiran: 1, zainteresovan: 2, dogovoreno: 5, odbijen: 1 };
-        c.stage = (c.status != null && map[c.status] != null) ? map[c.status] : 0;
-        if (c.status === "odbijen") c.dead = true;
-        delete c.status;
-      }
-      if (typeof c.dead !== "boolean") c.dead = false;
-      if (!c.id) c.id = uid();
-      if (!c.activities) c.activities = [];
-      if (!c.createdAt) c.createdAt = Date.now();
+  function messageMetrics() { return state.settings.metricMode === "calculated" ? calcMessageMetrics() : state.messageMetrics; }
+  function coldMetrics() {
+    const rank = { prospekt: 0, kontaktiran: 1, zainteresovan: 2, ponuda: 3, won: 4, odbijen: 1 };
+    const m = { total: state.prospects.length, contacted: 0, interested: 0, offers: 0, won: 0, rejected: 0 };
+    for (const p of state.prospects) {
+      if (p.status === "won") { m.contacted++; m.interested++; m.offers++; m.won++; continue; }
+      if (p.status === "odbijen") { m.contacted++; m.rejected++; continue; }
+      const r = rank[p.status] != null ? rank[p.status] : 0;
+      if (r >= 1) m.contacted++; if (r >= 2) m.interested++; if (r >= 3) m.offers++;
     }
+    return m;
   }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  const currency = () => state.settings.currency || "€";
+  function fmtMoney(n) { const c = currency(); return c === "RSD" ? fmtNum(Math.round(n)) + " RSD" : c + fmtNum(Math.round(n)); }
 
-  // ---------- Helpers ----------
-  const $ = (id) => document.getElementById(id);
-  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
-  function initials(name) {
-    const p = (name || "?").trim().split(/\s+/);
-    return ((p[0]||"")[0] || "?").toUpperCase() + ((p[1]||"")[0] || "").toUpperCase();
+  // ---------- Card builders ----------
+  function kpiCard(m, val, editable) {
+    return `<div class="kpi" style="--kc:${m.c}" data-kpikey="${m.key}">
+      <div class="kpi-top"><div class="kpi-ico">${m.icon}</div><div class="kpi-label">${esc(m.label)}</div></div>
+      <div class="kpi-num">${fmtNum(val)}</div>
+      ${editable ? `<input class="kpi-input" type="number" min="0" value="${val}" data-mkey="${m.key}" />` : ""}
+    </div>`;
   }
-  function colorFor(id) { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) % AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
-  function todayStr() { return new Date().toISOString().slice(0, 10); }
-  function fmtDate(iso) { if (!iso) return ""; const d = new Date(iso); if (isNaN(d)) return iso;
-    return d.toLocaleDateString("sr-RS", { day: "2-digit", month: "2-digit", year: "numeric" }); }
-  function fmtDateTime(iso) { if (!iso) return ""; const d = new Date(iso); if (isNaN(d)) return iso;
-    return d.toLocaleDateString("sr-RS", { day: "2-digit", month: "2-digit", year: "numeric" }) +
-      " " + d.toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" }); }
-  function lastActivityTime(c) { if (!c.activities || !c.activities.length) return c.createdAt || 0;
-    return c.activities.reduce((m, a) => Math.max(m, new Date(a.date).getTime() || 0), 0); }
-  function followupState(c) { if (!c.followup) return null; const t = todayStr();
-    if (c.followup < t) return "due"; if (c.followup === t) return "today"; return "upcoming"; }
-
-  // ---------- Funnel dashboard ----------
-  function renderFunnel() {
-    // Broj kontakata koji su dostigli bar fazu key (redosledno => stage >= key)
-    const counts = STAGES.map(s => state.contacts.filter(c => (c.stage || 0) >= s.key).length);
-    const base = Math.max(counts[0], 1);
-    const html = STAGES.map((s, i) => {
-      const n = counts[i];
-      const pct = Math.round((n / base) * 100);
-      let conv = "";
-      if (i > 0) {
-        const prev = counts[i - 1];
-        conv = prev > 0 ? Math.round((n / prev) * 100) + "%" : "—";
-      } else {
-        conv = "start";
-      }
-      return `<div class="f-row" style="--pct:${pct}%">
-        <div class="f-bar" style="background:${STAGE_COLOR[s.key]}"></div>
-        <div class="f-content">
-          <span class="f-ico">${s.icon}</span>
-          <span class="f-label">${esc(s.plural)}</span>
-          <span class="f-conv" title="konverzija sa prethodnog koraka">${conv}</span>
-          <span class="f-num">${n}</span>
-        </div>
-      </div>`;
+  function convCard(c, vals) {
+    const a = vals[c.num], b = vals[c.den], p = pct(a, b), w = p === null ? 0 : Math.min(p, 100);
+    return `<div class="conv"><div class="conv-label">${esc(c.label)}</div><div class="conv-val">${fmtPct(a, b)}</div>
+      <div class="conv-bar"><span style="width:${w}%"></span></div><div class="conv-frac">${fmtNum(a)} / ${fmtNum(b)}</div></div>`;
+  }
+  function funnelRows(defs, vals) {
+    const base = Math.max(vals[defs[0].key], 1);
+    return defs.map((d, i) => {
+      const n = vals[d.key], w = Math.round((n / base) * 100);
+      const conv = i === 0 ? "start" : fmtPct(vals[d.key], vals[defs[i - 1].key]);
+      return `<div class="frow" style="--fc:${d.c}"><div class="fbar" style="width:${w}%"></div>
+        <div class="fcontent"><span class="fico">${d.icon}</span><span class="flabel">${esc(d.label)}</span>
+        <span class="fconv">${conv}</span><span class="fnum">${fmtNum(n)}</span></div></div>`;
     }).join("");
-    $("funnel").innerHTML = html;
-
-    // mini stats
-    let due = 0, dead = 0;
-    for (const c of state.contacts) {
-      const fs = followupState(c); if (fs === "due" || fs === "today") due++;
-      if (c.dead) dead++;
-    }
-    const active = state.contacts.length - dead;
-    $("miniStats").innerHTML = [
-      `<div class="mini"><div class="n">${state.contacts.length}</div><div class="l">Ukupno kontakata</div></div>`,
-      `<div class="mini"><div class="n">${active}</div><div class="l">Aktivni</div></div>`,
-      `<div class="mini${due>0?" alert":""}"><div class="n">${due}</div><div class="l">Follow-up danas/dospeli</div></div>`,
-      `<div class="mini"><div class="n">${dead}</div><div class="l">Odbijeni</div></div>`,
-    ].join("");
+  }
+  function sumCard(cls, label, val, note) {
+    return `<div class="sumcard ${cls}"><div class="sum-label">${label}</div><div class="sum-val">${val}</div>${note ? `<div class="sum-note">${esc(note)}</div>` : ""}</div>`;
   }
 
-  // ---------- Contacts list ----------
-  function renderContacts() {
-    const wrap = $("contacts");
-    const q = $("search").value.trim().toLowerCase();
-    const fStage = $("filterStage").value;
-    const sortBy = $("sortBy").value;
-    const onlyDue = $("onlyDue").checked;
+  // ---------- MESSAGE ----------
+  let editingMetrics = false;
+  function renderMessage() {
+    const canEdit = state.settings.metricMode === "manual";
+    const vals = messageMetrics();
+    $("msgKpis").innerHTML = MSG_METRICS.map(m => kpiCard(m, vals[m.key], canEdit && editingMetrics)).join("");
+    $("msgConv").innerHTML = MSG_CONV.map(c => convCard(c, vals)).join("");
+    document.querySelectorAll("#metricMode button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.settings.metricMode));
+    $("editMetricsBtn").style.display = canEdit && !editingMetrics ? "" : "none";
+    $("saveMetricsBtn").style.display = canEdit && editingMetrics ? "" : "none";
+    document.querySelectorAll("#msgKpis .kpi").forEach(k => k.classList.toggle("editing", canEdit && editingMetrics));
+    renderLeadsTable();
+  }
+  function ensureSelectOptions() {
+    const fs = $("leadFilterStatus"); if (fs.children.length === 1) LEAD_STATUSES.forEach(s => fs.insertAdjacentHTML("beforeend", `<option value="${s.key}">${esc(s.label)}</option>`));
+    const fp = $("leadFilterPlatform"); if (fp.children.length === 1) ["Instagram","Facebook","Email","LinkedIn","WhatsApp","TikTok","Drugo"].forEach(p => fp.insertAdjacentHTML("beforeend", `<option>${p}</option>`));
+    const ls = $("l_status"); if (!ls.children.length) LEAD_STATUSES.forEach(s => ls.insertAdjacentHTML("beforeend", `<option value="${s.key}">${esc(s.label)}</option>`));
+    const psf = $("prospFilterStatus"); if (psf.children.length === 1) PROSPECT_STATUSES.forEach(s => psf.insertAdjacentHTML("beforeend", `<option value="${s.key}">${esc(s.label)}</option>`));
+    const ps = $("p_status"); if (!ps.children.length) PROSPECT_STATUSES.forEach(s => ps.insertAdjacentHTML("beforeend", `<option value="${s.key}">${esc(s.label)}</option>`));
+  }
+  function renderLeadsTable() {
+    const q = searchQuery.toLowerCase(), st = $("leadFilterStatus").value, pl = $("leadFilterPlatform").value, sort = $("leadSort").value;
+    let list = state.leads.filter(l => (!q || [l.name, l.company, l.contact, l.platform, l.notes].join(" ").toLowerCase().includes(q)) && (!st || l.status === st) && (!pl || l.platform === pl));
+    list.sort((a, b) => sort === "name" ? a.name.localeCompare(b.name, "sr") : sort === "date_asc" ? (a.date || "").localeCompare(b.date || "") || a.createdAt - b.createdAt : (b.date || "").localeCompare(a.date || "") || b.createdAt - a.createdAt);
+    if (!state.leads.length) { $("leadsTableWrap").innerHTML = `<div class="empty"><div class="big">💬</div><div>Još nema leadova.</div><div style="margin-top:10px"><button class="btn primary" data-openlead="new">+ Dodaj prvi lead</button></div></div>`; return; }
+    if (!list.length) { $("leadsTableWrap").innerHTML = `<div class="empty"><div class="big">🔍</div><div>Nema rezultata.</div></div>`; return; }
+    const chk = (v) => v ? '<span class="check-yes">✓</span>' : '<span class="check-no">–</span>';
+    const rows = list.map(l => { const s = leadStatus(l.status); return `<tr>
+      <td class="lead-name">${esc(l.name || "—")}${l.demo ? ' <span class="muted" style="font-size:10px">demo</span>' : ''}</td>
+      <td>${esc(l.company) || '<span class="muted">—</span>'}</td><td>${esc(l.platform)}</td>
+      <td>${esc(l.contact) || '<span class="muted">—</span>'}</td><td>${l.date ? esc(l.date) : '<span class="muted">—</span>'}</td>
+      <td class="cell-check">${chk(l.sent)}</td><td class="cell-check">${chk(l.replied)}</td><td class="cell-check">${chk(l.site)}</td>
+      <td class="cell-check">${chk(l.positive)}</td><td class="cell-check">${chk(l.booked)}</td><td class="cell-check">${chk(l.held)}</td><td class="cell-check">${chk(l.sale)}</td>
+      <td><span class="badge" style="--b-c:${s.c};--b-soft:${s.bg}">${esc(s.label)}</span></td>
+      <td>${l.notes ? esc(l.notes.slice(0, 40)) + (l.notes.length > 40 ? "…" : "") : '<span class="muted">—</span>'}</td>
+      <td><div class="row-actions"><button class="icon-btn" data-editlead="${l.id}" title="Izmeni">✎</button><button class="icon-btn del" data-dellead="${l.id}" title="Obriši">🗑</button></div></td></tr>`; }).join("");
+    $("leadsTableWrap").innerHTML = `<table class="data"><thead><tr><th>Ime</th><th>Firma</th><th>Platforma</th><th>Kontakt</th><th>Datum</th><th>Poslato</th><th>Odgov.</th><th>Sajt</th><th>Pozit.</th><th>Zakaz.</th><th>Održan</th><th>Prodaja</th><th>Status</th><th>Beleške</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
 
-    let list = state.contacts.slice();
-    if (q) list = list.filter(c => [c.name, c.company, c.phone, c.email, c.source, c.notes].join(" ").toLowerCase().includes(q));
-    if (fStage === "dead") list = list.filter(c => c.dead);
-    else if (fStage) { const need = parseInt(fStage.slice(1), 10); list = list.filter(c => (c.stage || 0) >= need); }
-    if (onlyDue) list = list.filter(c => { const s = followupState(c); return s === "due" || s === "today"; });
-
-    list.sort((a, b) => {
-      if (sortBy === "name") return (a.name || "").localeCompare(b.name || "", "sr");
-      if (sortBy === "created") return (b.createdAt || 0) - (a.createdAt || 0);
-      if (sortBy === "recent") return lastActivityTime(b) - lastActivityTime(a);
-      if (sortBy === "stage") return (b.stage || 0) - (a.stage || 0) || (a.name||"").localeCompare(b.name||"","sr");
-      const af = a.followup || "9999-99-99", bf = b.followup || "9999-99-99";
-      return af.localeCompare(bf);
+  // ---------- COLD ----------
+  function renderCold() {
+    const m = coldMetrics();
+    $("coldKpis").innerHTML = COLD_METRICS.map(x => kpiCard(x, m[x.key], false)).join("");
+    $("coldConv").innerHTML = COLD_CONV.map(c => convCard(c, m)).join("");
+    renderKanban();
+  }
+  function renderKanban() {
+    const q = searchQuery.toLowerCase();
+    $("kanban").innerHTML = PROSPECT_STATUSES.map(s => {
+      const items = state.prospects.filter(p => p.status === s.key && (!q || [p.company, p.phone, p.location, p.person, p.notes].join(" ").toLowerCase().includes(q)));
+      const cards = items.map(p => kanbanCard(p, s.key)).join("") || `<div class="kcol-empty">prazno</div>`;
+      return `<div class="kcol" data-col="${s.key}" style="--kc:${s.kc}"><div class="kcol-head"><span class="kcol-dot"></span><span class="kcol-title">${esc(s.label)}</span><span class="kcol-count">${items.length}</span></div><div class="kcards">${cards}</div></div>`;
+    }).join("");
+    attachDnD();
+  }
+  function kanbanCard(p, statusKey) {
+    const quick = [ { s: "kontaktiran", i: "☎", t: "Kontaktiran" }, { s: "zainteresovan", i: "🔥", t: "Zainteresovan" }, { s: "ponuda", i: "📤", t: "Poslata ponuda" }, { s: "won", i: "✅", t: "Won" }, { s: "odbijen", i: "❌", t: "Odbijen" } ].filter(a => a.s !== statusKey);
+    return `<div class="kcard" draggable="true" data-pid="${p.id}"><div class="kcard-title"><span>${esc(p.company)}</span><button class="icon-btn" data-editprospect="${p.id}" title="Izmeni">✎</button></div>
+      <div class="kcard-meta">${p.phone ? `<span>📞 ${esc(p.phone)}</span>` : ""}${p.location ? `<span>📍 ${esc(p.location)}</span>` : ""}<span class="muted">📅 ${esc(p.date)}</span></div>
+      <div class="kcard-actions">${quick.map(a => `<button class="qa" data-setstatus="${p.id}" data-status="${a.s}" title="${a.t}">${a.i}</button>`).join("")}</div></div>`;
+  }
+  let dragId = null;
+  function attachDnD() {
+    document.querySelectorAll(".kcard").forEach(card => {
+      card.addEventListener("dragstart", (e) => { dragId = card.dataset.pid; card.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
     });
+    document.querySelectorAll(".kcol").forEach(col => {
+      col.addEventListener("dragover", (e) => { e.preventDefault(); col.classList.add("dragover"); });
+      col.addEventListener("dragleave", () => col.classList.remove("dragover"));
+      col.addEventListener("drop", (e) => { e.preventDefault(); col.classList.remove("dragover"); if (dragId) { setProspectStatus(dragId, col.dataset.col); dragId = null; } });
+    });
+  }
+  function setProspectStatus(id, status) { const p = state.prospects.find(x => x.id === id); if (!p) return; p.status = status; save(); refresh(); toast(`Status → ${prospStatus(status).label}`); }
 
-    if (!state.contacts.length) {
-      wrap.innerHTML = `<div class="empty"><div class="big">📇</div><div>Još nema kontakata.</div>
-        <div style="margin-top:10px;"><button class="btn primary" onclick="document.getElementById('addContactBtn').click()">+ Dodaj prvi kontakt</button></div></div>`;
-      return;
-    }
-    if (!list.length) { wrap.innerHTML = `<div class="empty"><div class="big">🔍</div><div>Nema rezultata za zadate filtere.</div></div>`; return; }
-
-    const openIds = new Set([...wrap.querySelectorAll(".card.open")].map(c => c.dataset.id));
-    wrap.innerHTML = list.map(c => renderContactCard(c, openIds.has(c.id))).join("");
+  // ---------- PROSPECTS ----------
+  function renderProspects() {
+    const q = searchQuery.toLowerCase(), st = $("prospFilterStatus").value, dim = $("prospFilterDate").value, sort = $("prospSort").value, now = Date.now();
+    let list = state.prospects.filter(p => {
+      if (q && ![p.company, p.phone, p.location, p.person, p.email, p.notes].join(" ").toLowerCase().includes(q)) return false;
+      if (st && p.status !== st) return false;
+      if (dim) { const d = new Date(p.date).getTime(); if (isFinite(d) && (now - d) > dim * 86400000) return false; }
+      return true;
+    });
+    list.sort((a, b) => sort === "name" ? a.company.localeCompare(b.company, "sr") : sort === "date_asc" ? (a.date || "").localeCompare(b.date || "") || a.createdAt - b.createdAt : (b.date || "").localeCompare(a.date || "") || b.createdAt - a.createdAt);
+    $("navProspectCount").textContent = state.prospects.length;
+    if (!state.prospects.length) { $("prospectsTableWrap").innerHTML = `<div class="empty"><div class="big">🏢</div><div>Još nema prospekata.</div><div style="margin-top:10px"><button class="btn primary" data-openprospect="new">+ Dodaj prvi prospekt</button></div></div>`; return; }
+    if (!list.length) { $("prospectsTableWrap").innerHTML = `<div class="empty"><div class="big">🔍</div><div>Nema rezultata.</div></div>`; return; }
+    const rows = list.map(p => { const s = prospStatus(p.status); return `<tr>
+      <td class="lead-name">${esc(p.company)}${p.demo ? ' <span class="muted" style="font-size:10px">demo</span>' : ''}${p.person ? `<div class="muted" style="font-weight:400;font-size:11.5px">${esc(p.person)}</div>` : ""}</td>
+      <td>${p.phone ? esc(p.phone) : '<span class="muted">—</span>'}</td><td>${esc(p.location) || '<span class="muted">—</span>'}</td>
+      <td><span class="badge" style="--b-c:${s.c};--b-soft:${s.bg}">${esc(s.label)}</span></td><td>${esc(p.date)}</td>
+      <td><div class="row-actions">${p.phone ? `<button class="icon-btn" data-copyphone="${esc(p.phone)}" title="Kopiraj broj">📋</button>` : ""}${p.maps ? `<button class="icon-btn" data-openurl="${esc(p.maps)}" title="Google Maps">🗺</button>` : ""}${p.website ? `<button class="icon-btn" data-openurl="${esc(p.website)}" title="Website">🌐</button>` : ""}<button class="icon-btn" data-editprospect="${p.id}" title="Izmeni">✎</button><button class="icon-btn del" data-delprospect="${p.id}" title="Obriši">🗑</button></div></td></tr>`; }).join("");
+    $("prospectsTableWrap").innerHTML = `<table class="data" style="min-width:640px"><thead><tr><th>Firma</th><th>Telefon</th><th>Lokacija</th><th>Status</th><th>Dodat</th><th>Akcije</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  function stageBadge(c) {
-    if (c.dead) return `<span class="badge dead">Odbijen</span>`;
-    const st = c.stage || 0;
-    if (st === 0) return `<span class="badge stage0">Nov</span>`;
-    return `<span class="badge" style="background:${STAGE_COLOR[st]}">${esc(STAGE_LABEL[st])}</span>`;
+  // ---------- DASHBOARD ----------
+  function renderDash() {
+    const mm = messageMetrics(), cm = coldMetrics();
+    let revenue = 0, wonDeals = 0;
+    for (const l of state.leads) if (l.status === "won" || l.sale) { wonDeals++; revenue += l.deal || 0; }
+    for (const p of state.prospects) if (p.status === "won") { wonDeals++; revenue += p.deal || 0; }
+    const totalLeads = state.leads.length + state.prospects.length;
+    const totalOutreach = mm.sent + cm.total;
+    const positiveLeads = mm.positive + cm.interested;
+    const totalCalls = mm.held + cm.contacted;
+    const totalSales = mm.won + cm.won;
+    const avgDeal = wonDeals > 0 ? revenue / wonDeals : 0;
+    $("dashSummary").innerHTML = [
+      sumCard("hero", "🧲 Ukupno leadova", fmtNum(totalLeads), `${fmtNum(state.leads.length)} msg · ${fmtNum(state.prospects.length)} prospekata`),
+      sumCard("", "📣 Outreach pokušaji", fmtNum(totalOutreach), "poruke + prospekti"),
+      sumCard("", "🔥 Pozitivni leadovi", fmtNum(positiveLeads), "utisci + zainteresovani"),
+      sumCard("", "📞 Pozivi", fmtNum(totalCalls), "održani + kontaktirani"),
+      sumCard("", "📤 Poslate ponude", fmtNum(cm.offers), ""),
+      sumCard("", "💰 Prodaje", fmtNum(totalSales), ""),
+      sumCard("", "📈 Overall Conversion", fmtPct(totalSales, totalOutreach), "prodaje / outreach"),
+      sumCard("good", "💵 Total Revenue", fmtMoney(revenue), `Avg deal: ${fmtMoney(avgDeal)}`),
+    ].join("");
+    $("dashMsgKpis").innerHTML = MSG_METRICS.map(m => kpiCard(m, mm[m.key], false)).join("");
+    $("dashMsgConv").innerHTML = MSG_CONV.map(c => convCard(c, mm)).join("");
+    $("dashColdKpis").innerHTML = COLD_METRICS.map(m => kpiCard(m, cm[m.key], false)).join("");
+    $("dashColdConv").innerHTML = COLD_CONV.map(c => convCard(c, cm)).join("");
+    $("dashMsgFunnel").innerHTML = funnelRows(MSG_METRICS, mm);
+    $("dashColdFunnel").innerHTML = funnelRows(COLD_FUNNEL, cm);
   }
 
-  function stageTrack(c) {
-    const st = c.stage || 0;
-    return `<div class="stage-track">` + STAGES.map(s =>
-      `<button class="stage-chip${st >= s.key ? " reached" : ""}" data-stage="${s.key}" data-cid="${c.id}" title="${esc(STAGE_LABEL[s.key])}">
-        <span class="num">${s.key}</span>${s.icon} ${esc(s.short)}</button>`
-    ).join("") + `</div>`;
+  // ---------- Router ----------
+  const TITLES = { dash: "Dashboard", message: "Message Outreach", cold: "Cold Calling", prospects: "Prospekti", settings: "Settings" };
+  let currentView = "dash";
+  let searchQuery = "";
+  function refresh() {
+    if (currentView === "dash") renderDash();
+    else if (currentView === "message") renderMessage();
+    else if (currentView === "cold") renderCold();
+    else if (currentView === "prospects") renderProspects();
+    $("navProspectCount").textContent = state.prospects.length;
+  }
+  function switchView(v) {
+    currentView = v; editingMetrics = false; searchQuery = ""; $("globalSearch").value = "";
+    document.querySelectorAll(".view").forEach(el => el.classList.toggle("active", el.id === "view-" + v));
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.toggle("active", el.dataset.view === v));
+    $("pageTitle").textContent = TITLES[v] || "CRM";
+    $("globalSearch").style.display = (v === "message" || v === "cold" || v === "prospects") ? "" : "none";
+    closeSidebar();
+    refresh();
+    window.scrollTo({ top: 0 });
   }
 
-  function renderContactCard(c, isOpen) {
-    const fs = followupState(c);
-    let fpHtml = "";
-    if (c.followup) {
-      const label = fs === "due" ? "Dospeo follow-up: " : fs === "today" ? "Follow-up danas: " : "Follow-up: ";
-      fpHtml = `<div class="followup-pill ${fs}">⏰ ${label}${fmtDate(c.followup)}</div>`;
-    }
-    const acts = (c.activities || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-    const lastAct = acts[0];
-    const contactLines = [];
-    if (c.company) contactLines.push(esc(c.company));
-    if (c.phone) contactLines.push(`<a href="tel:${esc(c.phone)}">📞 ${esc(c.phone)}</a>`);
-    if (c.email) contactLines.push(`<a href="mailto:${esc(c.email)}">✉️ ${esc(c.email)}</a>`);
-
-    return `<div class="card${isOpen ? " open" : ""}" data-id="${c.id}">
-      <div class="contact-head" data-toggle="${c.id}">
-        <div class="avatar" style="background:${colorFor(c.id)}">${esc(initials(c.name))}</div>
-        <div class="contact-main">
-          <div class="contact-name">${esc(c.name || "Bez imena")} ${stageBadge(c)}</div>
-          <div class="contact-sub">${contactLines.join(" · ") || "<span style='color:var(--text-faint)'>nema kontakt podataka</span>"}</div>
-          ${fpHtml}
-        </div>
-        <div class="contact-meta">
-          ${c.source ? `<div>izvor: ${esc(c.source)}</div>` : ""}
-          <div>${acts.length} aktivnosti</div>
-          ${lastAct ? `<div>posl.: ${esc(fmtDate(lastAct.date))}</div>` : ""}
-        </div>
-      </div>
-      <div class="contact-body"><div class="contact-body-inner">
-        <div style="font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:7px;">FAZA U LEVKU · klikni da pomeriš</div>
-        ${stageTrack(c)}
-        <div class="quick-actions">
-          <button class="btn sm" data-act="poziv" data-id="${c.id}">📞 Poziv</button>
-          <button class="btn sm" data-act="poruka" data-id="${c.id}">💬 Poruka</button>
-          <button class="btn sm" data-act="email" data-id="${c.id}">✉️ Email</button>
-          <button class="btn sm" data-act="sastanak" data-id="${c.id}">🤝 Sastanak</button>
-          <button class="btn sm" data-act="beleska" data-id="${c.id}">📝 Beleška</button>
-          <span style="flex:1"></span>
-          <button class="btn sm" data-edit="${c.id}">✎ Izmeni</button>
-        </div>
-        ${c.notes ? `<div style="background:var(--surface-2);padding:10px 12px;border-radius:9px;margin-bottom:14px;font-size:13px;white-space:pre-wrap;">${esc(c.notes)}</div>` : ""}
-        <div class="activity-list">
-          ${acts.length ? acts.map(a => renderActivity(c.id, a)).join("") :
-            `<div style="color:var(--text-faint);font-size:13px;padding:6px 0;">Još nema zabeleženih aktivnosti. Klikni dugme iznad da dodaš poziv ili poruku.</div>`}
-        </div>
-      </div></div>
-    </div>`;
+  // ---------- Prospect modal ----------
+  function openProspectModal(p) {
+    ensureSelectOptions();
+    $("prospectModalTitle").textContent = p ? "Izmeni prospekt" : "Dodaj prospekt";
+    $("p_id").value = p ? p.id : "";
+    $("p_company").value = p ? p.company : ""; $("p_person").value = p ? p.person : "";
+    $("p_phone").value = p ? p.phone : ""; $("p_email").value = p ? p.email : "";
+    $("p_maps").value = p ? p.maps : ""; $("p_website").value = p ? p.website : "";
+    $("p_location").value = p ? p.location : ""; $("p_status").value = p ? p.status : "prospekt";
+    $("p_deal").value = p && p.deal ? p.deal : ""; $("p_notes").value = p ? p.notes : "";
+    updateDealVisibility("p");
+    $("deleteProspectBtn").style.display = p ? "inline-flex" : "none";
+    $("prospectOverlay").classList.add("show"); $("p_company").focus();
+  }
+  function saveProspect() {
+    const company = $("p_company").value.trim();
+    if (!company) { toast("Unesi naziv firme."); $("p_company").focus(); return; }
+    const id = $("p_id").value;
+    const data = { company, person: $("p_person").value.trim(), phone: $("p_phone").value.trim(), email: $("p_email").value.trim(),
+      maps: $("p_maps").value.trim(), website: $("p_website").value.trim(), location: $("p_location").value.trim(),
+      status: $("p_status").value, deal: numF($("p_deal").value), notes: $("p_notes").value.trim() };
+    if (id) { const p = state.prospects.find(x => x.id === id); if (p) { Object.assign(p, data); p.demo = false; } toast("Prospekt izmenjen."); }
+    else { state.prospects.push(normProspect(Object.assign({ id: uid(), date: new Date().toISOString().slice(0, 10), createdAt: Date.now() }, data))); toast("Prospekt dodat."); }
+    save(); $("prospectOverlay").classList.remove("show"); refresh();
   }
 
-  function renderActivity(cid, a) {
-    return `<div class="activity">
-      <div class="act-icon">${TYPE_ICONS[a.type] || "📝"}</div>
-      <div class="act-body">
-        <div class="act-top">
-          <span class="act-type">${esc(TYPE_LABELS[a.type] || a.type)}${a.outcome ? ` — <span class="act-outcome">${esc(a.outcome)}</span>` : ""}</span>
-          <span class="act-date">${esc(fmtDateTime(a.date))}
-            <button class="act-del" title="Obriši" data-delact="${a.id}" data-cid="${cid}">🗑</button></span>
-        </div>
-        ${a.note ? `<div class="act-note">${esc(a.note)}</div>` : ""}
-      </div>
-    </div>`;
+  // ---------- Lead modal ----------
+  function openLeadModal(l) {
+    ensureSelectOptions();
+    $("leadModalTitle").textContent = l ? "Izmeni lead" : "Novi lead";
+    $("l_id").value = l ? l.id : "";
+    $("l_name").value = l ? l.name : ""; $("l_company").value = l ? l.company : "";
+    $("l_platform").value = l ? l.platform : "Instagram"; $("l_contact").value = l ? l.contact : "";
+    $("l_date").value = l ? l.date : new Date().toISOString().slice(0, 10); $("l_status").value = l ? l.status : "nije";
+    $("l_sent").checked = l ? l.sent : false; $("l_replied").checked = l ? l.replied : false; $("l_site").checked = l ? l.site : false;
+    $("l_positive").checked = l ? l.positive : false; $("l_booked").checked = l ? l.booked : false; $("l_held").checked = l ? l.held : false; $("l_sale").checked = l ? l.sale : false;
+    $("l_deal").value = l && l.deal ? l.deal : ""; $("l_notes").value = l ? l.notes : "";
+    updateDealVisibility("l");
+    $("deleteLeadBtn").style.display = l ? "inline-flex" : "none";
+    $("leadOverlay").classList.add("show"); $("l_name").focus();
+  }
+  function saveLead() {
+    const name = $("l_name").value.trim();
+    if (!name) { toast("Unesi ime leada."); $("l_name").focus(); return; }
+    const id = $("l_id").value;
+    const data = { name, company: $("l_company").value.trim(), platform: $("l_platform").value, contact: $("l_contact").value.trim(),
+      date: $("l_date").value, status: $("l_status").value, sent: $("l_sent").checked, replied: $("l_replied").checked, site: $("l_site").checked,
+      positive: $("l_positive").checked, booked: $("l_booked").checked, held: $("l_held").checked, sale: $("l_sale").checked,
+      deal: numF($("l_deal").value), notes: $("l_notes").value.trim() };
+    if (id) { const l = state.leads.find(x => x.id === id); if (l) { Object.assign(l, data); l.demo = false; } toast("Lead izmenjen."); }
+    else { state.leads.push(normLead(Object.assign({ id: uid(), createdAt: Date.now() }, data))); toast("Lead dodat."); }
+    save(); $("leadOverlay").classList.remove("show"); refresh();
+  }
+  function updateDealVisibility(prefix) {
+    if (prefix === "p") $("p_dealWrap").style.display = $("p_status").value === "won" ? "" : "none";
+    else $("l_dealWrap").style.display = ($("l_status").value === "won" || $("l_sale").checked) ? "" : "none";
   }
 
-  // ---------- Stage quick-set ----------
-  function setStage(cid, key) {
-    const c = state.contacts.find(x => x.id === cid);
-    if (!c) return;
-    // klik na trenutnu najdalju fazu => vrati za jedan (toggle nazad)
-    c.stage = (c.stage === key) ? key - 1 : key;
-    if (c.stage < 0) c.stage = 0;
-    save(); renderAll();
-    const card = document.querySelector(`.card[data-id="${cid}"]`); if (card) card.classList.add("open");
-  }
-
-  // ---------- Contact modal ----------
-  function openContactModal(c) {
-    $("contactModalTitle").textContent = c ? "Izmeni kontakt" : "Novi kontakt";
-    $("c_id").value = c ? c.id : "";
-    $("c_name").value = c ? c.name || "" : "";
-    $("c_company").value = c ? c.company || "" : "";
-    $("c_phone").value = c ? c.phone || "" : "";
-    $("c_email").value = c ? c.email || "" : "";
-    $("c_stage").value = c ? String(c.stage || 0) : "0";
-    $("c_source").value = c ? c.source || "" : "";
-    $("c_followup").value = c ? c.followup || "" : "";
-    $("c_dead").checked = c ? !!c.dead : false;
-    $("c_notes").value = c ? c.notes || "" : "";
-    $("deleteContactBtn").style.display = c ? "inline-flex" : "none";
-    $("contactOverlay").classList.add("show");
-    $("c_name").focus();
-  }
-  function closeContactModal() { $("contactOverlay").classList.remove("show"); }
-
-  function saveContact() {
-    const name = $("c_name").value.trim();
-    if (!name) { alert("Unesi bar ime kontakta."); $("c_name").focus(); return; }
-    const id = $("c_id").value;
-    const data = {
-      name,
-      company: $("c_company").value.trim(),
-      phone: $("c_phone").value.trim(),
-      email: $("c_email").value.trim(),
-      stage: parseInt($("c_stage").value, 10) || 0,
-      source: $("c_source").value.trim(),
-      followup: $("c_followup").value,
-      dead: $("c_dead").checked,
-      notes: $("c_notes").value.trim(),
-    };
-    if (id) { const c = state.contacts.find(x => x.id === id); if (c) Object.assign(c, data); }
-    else { state.contacts.push(Object.assign({ id: uid(), createdAt: Date.now(), activities: [] }, data)); }
-    save(); closeContactModal(); renderAll();
-  }
-
-  function deleteContact() {
-    const id = $("c_id").value;
-    const c = state.contacts.find(x => x.id === id);
-    if (!c) return;
-    if (!confirm(`Obrisati kontakt "${c.name}" i sve njegove aktivnosti?`)) return;
-    state.contacts = state.contacts.filter(x => x.id !== id);
-    save(); closeContactModal(); renderAll();
-  }
-
-  // ---------- Activity modal ----------
-  function openActivityModal(cid, presetType) {
-    $("a_contactId").value = cid;
-    $("a_type").value = presetType || "poziv";
-    const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    $("a_date").value = now.toISOString().slice(0, 16);
-    $("a_outcome").value = "";
-    $("a_note").value = "";
-    $("a_nextFollowup").value = "";
-    $("activityOverlay").classList.add("show");
-    $("a_note").focus();
-  }
-  function closeActivityModal() { $("activityOverlay").classList.remove("show"); }
-
-  function saveActivity() {
-    const cid = $("a_contactId").value;
-    const c = state.contacts.find(x => x.id === cid);
-    if (!c) return;
-    if (!c.activities) c.activities = [];
-    const dateVal = $("a_date").value;
-    const type = $("a_type").value;
-    const outcome = $("a_outcome").value;
-    c.activities.push({ id: uid(), type, date: dateVal ? new Date(dateVal).toISOString() : new Date().toISOString(),
-      outcome, note: $("a_note").value.trim() });
-
-    // Lagano automatsko pomeranje faze na osnovu tipa/ishoda (nikad unazad)
-    let target = 0;
-    if (type === "poruka" || type === "email") target = 1;
-    if (outcome === "Poslato") target = Math.max(target, 1);
-    if (outcome === "Odgovorio") target = Math.max(target, 2);
-    if (outcome === "Zainteresovan") target = Math.max(target, 4);
-    if (outcome === "Zakazano") target = Math.max(target, 5);
-    if (type === "sastanak" || outcome === "Održan poziv") target = Math.max(target, 6);
-    if (outcome === "Prodaja") target = Math.max(target, 7);
-    if (target > (c.stage || 0)) c.stage = target;
-    if (outcome === "Odbio") c.dead = true;
-
-    const nf = $("a_nextFollowup").value;
-    if (nf) c.followup = nf;
-    save(); closeActivityModal(); renderAll();
-    const card = document.querySelector(`.card[data-id="${cid}"]`); if (card) card.classList.add("open");
-  }
-
-  function deleteActivity(cid, aid) {
-    const c = state.contacts.find(x => x.id === cid);
-    if (!c) return;
-    if (!confirm("Obrisati ovu aktivnost?")) return;
-    c.activities = (c.activities || []).filter(a => a.id !== aid);
-    save(); renderAll();
-    const card = document.querySelector(`.card[data-id="${cid}"]`); if (card) card.classList.add("open");
+  // ---------- Confirm ----------
+  let confirmAction = null;
+  function askConfirm(msg, onOk, title) {
+    $("confirmTitle").textContent = title || "Potvrda"; $("confirmMsg").textContent = msg;
+    confirmAction = onOk; $("confirmOverlay").classList.add("show");
   }
 
   // ---------- Export / Import ----------
-  function exportJSON() { saveFile(`outreach-crm-backup-${todayStr()}.json`, JSON.stringify(state, null, 2), "application/json"); }
-  function exportCSV() {
-    const rows = [["Ime","Firma","Telefon","Email","Faza","Naziv faze","Odbijen","Izvor","Follow-up","Broj aktivnosti","Poslednja aktivnost","Napomena"]];
-    for (const c of state.contacts) {
-      const acts = (c.activities || []).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
-      rows.push([ c.name||"", c.company||"", c.phone||"", c.email||"", c.stage||0, STAGE_LABEL[c.stage||0]||"",
-        c.dead?"da":"ne", c.source||"", c.followup||"", (c.activities||[]).length,
-        acts[0]?fmtDateTime(acts[0].date):"", (c.notes||"").replace(/\n/g," ") ]);
-    }
-    const csv = rows.map(r => r.map(cell => { const s = String(cell); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(";")).join("\r\n");
-    saveFile(`outreach-crm-${todayStr()}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
-  }
   async function saveFile(name, text, mime) {
-    try {
-      const dl = window.claude && typeof window.claude.use === "function" ? await window.claude.use("downloads") : null;
-      if (dl) { try { await dl.save({ filename: name, data: text }); return; } catch (e) { if (e && e.code === "declined") return; } }
-    } catch (e) {}
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = name; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    try { const dl = window.claude && typeof window.claude.use === "function" ? await window.claude.use("downloads") : null;
+      if (dl) { try { await dl.save({ filename: name, data: text }); toast("Sačuvano."); return; } catch (e) { if (e && e.code === "declined") return; } } } catch (e) {}
+    const blob = new Blob([text], { type: mime }), url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast("Preuzeto.");
+  }
+  const todayStr = () => new Date().toISOString().slice(0, 10);
+  function exportJSON() { saveFile(`outreach-crm-${todayStr()}.json`, JSON.stringify({ app: "outreach-crm", version: 2, exportedAt: new Date().toISOString(), data: state }, null, 2), "application/json"); }
+  function csvCell(v) { const s = String(v == null ? "" : v); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+  function exportCSV() {
+    const L = [["TIP","Ime/Firma","Firma","Platforma/Telefon","Kontakt/Lokacija","Datum","Status","Prodaja","Beleške"]];
+    for (const l of state.leads) L.push(["LEAD", l.name, l.company, l.platform, l.contact, l.date, leadStatus(l.status).label, l.deal || "", (l.notes||"").replace(/\n/g," ")]);
+    for (const p of state.prospects) L.push(["PROSPEKT", p.company, p.person, p.phone, p.location, p.date, prospStatus(p.status).label, p.deal || "", (p.notes||"").replace(/\n/g," ")]);
+    const csv = L.map(r => r.map(csvCell).join(";")).join("\r\n");
+    saveFile(`outreach-crm-${todayStr()}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
   }
   function importJSON(file) {
     const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(reader.result);
-        if (!data || !Array.isArray(data.contacts)) throw new Error("format");
-        if (!confirm(`Uvezi ${data.contacts.length} kontakata? Ovo će zameniti trenutne podatke.`)) return;
-        state = data; migrateAll(); save(); renderAll(); alert("Podaci uvezeni.");
-      } catch (e) { alert("Neispravan fajl. Očekivan je backup JSON iz ove aplikacije."); }
-    };
+    reader.onload = () => { try {
+      const parsed = JSON.parse(reader.result), d = parsed && parsed.data ? parsed.data : parsed;
+      if (!d || (!Array.isArray(d.leads) && !Array.isArray(d.prospects) && !d.messageMetrics)) throw new Error("format");
+      askConfirm("Uvezi podatke iz kopije? Ovo će zameniti trenutne podatke.", () => { state = normalize(d); save(); applySettingsToUI(); refresh(); toast("Podaci uvezeni."); });
+    } catch (e) { toast("Neispravan JSON fajl."); } };
     reader.readAsText(file);
   }
 
-  // ---------- Theme ----------
-  function applyTheme(t) { if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); }
-  function toggleTheme() {
-    const cur = localStorage.getItem(THEME_KEY);
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark" || (!cur && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    const next = isDark ? "light" : "dark";
-    try { localStorage.setItem(THEME_KEY, next); } catch(e) {}
-    applyTheme(next);
+  // ---------- Settings ----------
+  function applyTheme(t) { document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark"); }
+  function applySettingsToUI() {
+    applyTheme(state.settings.theme);
+    document.querySelectorAll("#themeSeg button").forEach(b => b.classList.toggle("on", b.dataset.theme === state.settings.theme));
+    $("currencySelect").value = state.settings.currency || "€";
   }
-
-  // ---------- Render all ----------
-  function renderAll() { renderFunnel(); renderContacts(); }
 
   // ---------- Events ----------
-  $("addContactBtn").addEventListener("click", () => openContactModal(null));
-  $("saveContactBtn").addEventListener("click", saveContact);
-  $("deleteContactBtn").addEventListener("click", deleteContact);
-  $("saveActivityBtn").addEventListener("click", saveActivity);
-  $("search").addEventListener("input", renderContacts);
-  $("filterStage").addEventListener("change", renderContacts);
-  $("sortBy").addEventListener("change", renderContacts);
-  $("onlyDue").addEventListener("change", renderContacts);
-  $("exportBtn").addEventListener("click", exportJSON);
-  $("csvBtn").addEventListener("click", exportCSV);
-  $("importBtn").addEventListener("click", () => $("importFile").click());
-  $("importFile").addEventListener("change", (e) => { if (e.target.files[0]) importJSON(e.target.files[0]); e.target.value = ""; });
-  $("themeBtn").addEventListener("click", toggleTheme);
+  document.querySelectorAll(".nav-item").forEach(el => el.addEventListener("click", () => switchView(el.dataset.view)));
+  $("hambBtn").addEventListener("click", () => { $("sidebar").classList.add("open"); $("scrim").classList.add("show"); });
+  $("scrim").addEventListener("click", closeSidebar);
+  function closeSidebar() { $("sidebar").classList.remove("open"); $("scrim").classList.remove("show"); }
+  $("profileBtn").addEventListener("click", () => switchView("settings"));
 
-  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", closeContactModal));
-  document.querySelectorAll("[data-close-act]").forEach(b => b.addEventListener("click", closeActivityModal));
-  $("contactOverlay").addEventListener("click", (e) => { if (e.target === $("contactOverlay")) closeContactModal(); });
-  $("activityOverlay").addEventListener("click", (e) => { if (e.target === $("activityOverlay")) closeActivityModal(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeContactModal(); closeActivityModal(); } });
+  [$("addProspectBtn"), $("addProspectBtn2"), $("addProspectBtn3")].forEach(b => b.addEventListener("click", () => openProspectModal(null)));
+  $("addLeadBtn").addEventListener("click", () => openLeadModal(null));
+  $("saveProspectBtn").addEventListener("click", saveProspect);
+  $("saveLeadBtn").addEventListener("click", saveLead);
+  $("p_status").addEventListener("change", () => updateDealVisibility("p"));
+  $("l_status").addEventListener("change", () => updateDealVisibility("l"));
+  $("l_sale").addEventListener("change", () => updateDealVisibility("l"));
 
-  $("contacts").addEventListener("click", (e) => {
-    const stageBtn = e.target.closest("[data-stage]");
-    const toggle = e.target.closest("[data-toggle]");
-    const editBtn = e.target.closest("[data-edit]");
-    const actBtn = e.target.closest("[data-act]");
-    const delAct = e.target.closest("[data-delact]");
-    if (stageBtn) { e.stopPropagation(); setStage(stageBtn.dataset.cid, parseInt(stageBtn.dataset.stage, 10)); return; }
-    if (delAct) { e.stopPropagation(); deleteActivity(delAct.dataset.cid, delAct.dataset.delact); return; }
-    if (editBtn) { e.stopPropagation(); openContactModal(state.contacts.find(x => x.id === editBtn.dataset.edit)); return; }
-    if (actBtn) { e.stopPropagation(); openActivityModal(actBtn.dataset.id, actBtn.dataset.act); return; }
-    if (toggle) { toggle.closest(".card").classList.toggle("open"); return; }
+  $("deleteProspectBtn").addEventListener("click", () => {
+    const id = $("p_id").value, p = state.prospects.find(x => x.id === id); if (!p) return;
+    askConfirm(`Obrisati prospekt "${p.company}"?`, () => { state.prospects = state.prospects.filter(x => x.id !== id); save(); $("prospectOverlay").classList.remove("show"); refresh(); toast("Prospekt obrisan."); });
+  });
+  $("deleteLeadBtn").addEventListener("click", () => {
+    const id = $("l_id").value, l = state.leads.find(x => x.id === id); if (!l) return;
+    askConfirm(`Obrisati lead "${l.name}"?`, () => { state.leads = state.leads.filter(x => x.id !== id); save(); $("leadOverlay").classList.remove("show"); refresh(); toast("Lead obrisan."); });
   });
 
-  // ---------- Init ----------
-  applyTheme(localStorage.getItem(THEME_KEY));
-  renderAll();
+  // modal close handlers
+  document.querySelectorAll("[data-close-prospect]").forEach(b => b.addEventListener("click", () => $("prospectOverlay").classList.remove("show")));
+  document.querySelectorAll("[data-close-lead]").forEach(b => b.addEventListener("click", () => $("leadOverlay").classList.remove("show")));
+  document.querySelectorAll("[data-close-confirm]").forEach(b => b.addEventListener("click", () => { $("confirmOverlay").classList.remove("show"); confirmAction = null; }));
+  $("confirmOkBtn").addEventListener("click", () => { if (confirmAction) confirmAction(); $("confirmOverlay").classList.remove("show"); confirmAction = null; });
+  [["prospectOverlay"], ["leadOverlay"], ["confirmOverlay"]].forEach(([ov]) => $(ov).addEventListener("click", (e) => { if (e.target === $(ov)) $(ov).classList.remove("show"); }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".overlay.show").forEach(o => o.classList.remove("show")); });
 
-  function maybeQuickAdd() {
-    const h = (location.hash || "").toLowerCase(), s = (location.search || "").toLowerCase();
-    if (h.indexOf("add") !== -1 || s.indexOf("add") !== -1) openContactModal(null);
+  // metrics edit
+  $("editMetricsBtn").addEventListener("click", () => { editingMetrics = true; renderMessage(); });
+  $("saveMetricsBtn").addEventListener("click", () => {
+    document.querySelectorAll("#msgKpis .kpi-input").forEach(inp => { state.messageMetrics[inp.dataset.mkey] = num(inp.value); });
+    editingMetrics = false; save(); renderMessage(); toast("Metrike sačuvane.");
+  });
+  document.querySelectorAll("#metricMode button").forEach(b => b.addEventListener("click", () => { state.settings.metricMode = b.dataset.mode; editingMetrics = false; save(); renderMessage(); }));
+  // Enter commits metric edit
+  $("msgKpis").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.classList.contains("kpi-input")) { e.preventDefault(); $("saveMetricsBtn").click(); } });
+
+  // toolbars
+  ["leadFilterStatus","leadFilterPlatform","leadSort"].forEach(id => $(id).addEventListener("change", renderLeadsTable));
+  ["prospFilterStatus","prospFilterDate","prospSort"].forEach(id => $(id).addEventListener("change", renderProspects));
+  $("globalSearch").addEventListener("input", (e) => { searchQuery = e.target.value.trim(); if (currentView === "message") renderLeadsTable(); else if (currentView === "cold") renderKanban(); else if (currentView === "prospects") renderProspects(); });
+
+  // delegated actions (tables + kanban + empty-state buttons)
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    const editLead = t.closest("[data-editlead]"); if (editLead) { openLeadModal(state.leads.find(x => x.id === editLead.dataset.editlead)); return; }
+    const delLead = t.closest("[data-dellead]"); if (delLead) { const l = state.leads.find(x => x.id === delLead.dataset.dellead); if (l) askConfirm(`Obrisati lead "${l.name}"?`, () => { state.leads = state.leads.filter(x => x.id !== l.id); save(); refresh(); toast("Lead obrisan."); }); return; }
+    const editP = t.closest("[data-editprospect]"); if (editP) { openProspectModal(state.prospects.find(x => x.id === editP.dataset.editprospect)); return; }
+    const delP = t.closest("[data-delprospect]"); if (delP) { const p = state.prospects.find(x => x.id === delP.dataset.delprospect); if (p) askConfirm(`Obrisati prospekt "${p.company}"?`, () => { state.prospects = state.prospects.filter(x => x.id !== p.id); save(); refresh(); toast("Prospekt obrisan."); }); return; }
+    const setS = t.closest("[data-setstatus]"); if (setS) { setProspectStatus(setS.dataset.setstatus, setS.dataset.status); return; }
+    const openUrl = t.closest("[data-openurl]"); if (openUrl) { let u = openUrl.dataset.openurl; if (!/^https?:\/\//i.test(u)) u = "https://" + u; window.open(u, "_blank", "noopener"); return; }
+    const copyP = t.closest("[data-copyphone]"); if (copyP) { copyText(copyP.dataset.copyphone); return; }
+    if (t.closest("[data-openlead]")) { openLeadModal(null); return; }
+    if (t.closest("[data-openprospect]")) { openProspectModal(null); return; }
+  });
+  function copyText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast("Broj kopiran: " + txt)).catch(() => fallbackCopy(txt));
+    else fallbackCopy(txt);
   }
-  maybeQuickAdd();
-  window.addEventListener("hashchange", maybeQuickAdd);
+  function fallbackCopy(txt) { const ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); toast("Broj kopiran: " + txt); } catch (e) { toast("Kopiranje nije uspelo."); } document.body.removeChild(ta); }
+
+  // settings
+  document.querySelectorAll("#themeSeg button").forEach(b => b.addEventListener("click", () => { state.settings.theme = b.dataset.theme; save(); applySettingsToUI(); }));
+  $("currencySelect").addEventListener("change", (e) => { state.settings.currency = e.target.value; save(); refresh(); });
+  $("exportJsonBtn").addEventListener("click", exportJSON);
+  $("exportCsvBtn").addEventListener("click", exportCSV);
+  $("importBtn").addEventListener("click", () => $("importFile").click());
+  $("importFile").addEventListener("change", (e) => { if (e.target.files[0]) importJSON(e.target.files[0]); e.target.value = ""; });
+  $("clearDemoBtn").addEventListener("click", () => askConfirm("Obrisati sve testne (demo) leadove i prospekte? Tvoji unosi ostaju.", () => { state.leads = state.leads.filter(l => !l.demo); state.prospects = state.prospects.filter(p => !p.demo); save(); refresh(); toast("Testni podaci obrisani."); }));
+  $("resetBtn").addEventListener("click", () => askConfirm("Da li ste sigurni da želite da obrišete SVE podatke? Ova akcija se ne može poništiti.", () => { state = defaultState(); save(); applySettingsToUI(); refresh(); toast("Svi podaci obrisani."); }, "Obriši sve podatke"));
+
+  // ---------- Init ----------
+  ensureSelectOptions();
+  applySettingsToUI();
+  switchView("dash");
+  if (firstRun) toast("Dobrodošao! Učitani su testni podaci (možeš ih obrisati u Settings).");
 })();
 </script>
 </body>
