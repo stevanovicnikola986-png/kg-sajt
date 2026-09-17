@@ -503,7 +503,7 @@
 
   let state = load();
   let firstRun = false;
-  if (!state) { state = defaultState(); seed(); firstRun = true; save(); }
+  if (!state) { state = defaultState(); firstRun = true; save(); }
 
   function seed() {
     state.messageMetrics = { sent: 240, replies: 71, accepted: 44, positive: 27, booked: 14, held: 9, won: 4 };
@@ -905,7 +905,7 @@
   ensureSelectOptions();
   applySettingsToUI();
   switchView("dash");
-  if (firstRun) toast("Dobrodošao! Učitani su testni podaci (možeš ih obrisati u Settings).");
+  if (firstRun) toast("Dobrodošao! Sve je na nuli — dodaj svoj prvi prospekt da počneš.");
 
   // ---------- PWA: service worker (za instalaciju/offline; radi samo preko http/https) ----------
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
