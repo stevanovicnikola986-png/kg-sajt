@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Britva Barbershop</title>
+<meta name="description" content="Muška brijačnica — klasično brijanje i moderni fade. Demo sajt." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --bg-2: #131315;
+    --surface: #17171a;
+    --surface-2: #1f1f23;
+    --line: #26262a;
+    --line-2: #33332f;
+    --text: #ece6dc;
+    --muted: #9c968b;
+    --faint: #6b665e;
+    --copper: #cf8544;
+    --copper-2: #e8ab6b;
+    --oxblood: #9a413a;
+    --steel: #7f8894;
+    --radius: 14px;
+    --shadow: 0 24px 60px rgba(0,0,0,.55);
+    --ff-head: "Oswald", "Arial Narrow", sans-serif;
+    --ff-body: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--ff-body); font-weight: 400; font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(820px 480px at 88% -8%, rgba(207,133,68,.12), transparent 60%),
+      radial-gradient(600px 420px at -6% 20%, rgba(127,136,148,.06), transparent 60%);
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { font-family: var(--ff-head); font-weight: 600; margin: 0; line-height: 1.02; text-transform: uppercase; letter-spacing: .5px; text-wrap: balance; }
+  .wrap { width: 100%; max-width: 1140px; margin: 0 auto; padding-inline: 22px; }
+  .eyebrow { font-family: var(--ff-head); font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--copper);
+    font-weight: 500; display: inline-flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--copper); }
+  .copper { color: var(--copper); }
+
+  /* barber pole */
+  .pole { background: repeating-linear-gradient(45deg, var(--oxblood) 0 10px, #e9e2d6 10px 20px, #2b6c8f 20px 30px, #e9e2d6 30px 40px); }
+
+  /* NAV */
+  header.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; backdrop-filter: blur(14px);
+    background: rgba(12,12,14,.78); border-bottom: 1px solid var(--line); }
+  .nav-inner { display: flex; align-items: center; gap: 20px; height: 66px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .pole { width: 7px; height: 34px; border-radius: 4px; }
+  .brand .bt { font-family: var(--ff-head); font-size: 25px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .brand .bt small { display: block; font-family: var(--ff-body); font-size: 9px; letter-spacing: 3.5px; color: var(--copper); margin-top: -4px; font-weight: 500; }
+  .nav-links { display: flex; gap: 26px; margin-left: auto; }
+  .nav-links a { font-family: var(--ff-head); font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--ff-head); font-weight: 600;
+    font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 22px; border-radius: 8px; cursor: pointer;
+    border: 1px solid transparent; transition: transform .15s, box-shadow .2s, background .2s, color .2s; }
+  .btn-copper { background: linear-gradient(135deg, var(--copper-2), var(--copper)); color: #221609; box-shadow: 0 10px 26px rgba(207,133,68,.3); }
+  .btn-copper:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(207,133,68,.42); }
+  .btn-ghost { border-color: var(--line-2); color: var(--text); background: transparent; }
+  .btn-ghost:hover { border-color: var(--copper); color: var(--copper); }
+  .nav .btn { padding: 10px 20px; }
+  .burger { display: none; margin-left: auto; background: none; border: 1px solid var(--line-2); color: var(--text); width: 42px; height: 42px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+
+  /* HERO */
+  .hero { padding-block: 70px 56px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 50px; align-items: center; }
+  .hero h1 { font-size: clamp(46px, 7.4vw, 88px); font-weight: 700; margin: 20px 0 16px; }
+  .hero h1 .out { color: transparent; -webkit-text-stroke: 1.5px var(--copper); }
+  .hero p.lead { color: var(--muted); font-size: 18px; max-width: 44ch; margin: 0 0 28px; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .trust { display: flex; gap: 32px; margin-top: 38px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .trust .n { font-family: var(--ff-head); font-size: 36px; font-weight: 700; color: var(--copper); line-height: 1; }
+  .trust .l { font-family: var(--ff-head); font-size: 12px; color: var(--faint); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+
+  .hero-art { position: relative; aspect-ratio: 4/5; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: var(--shadow);
+    background: radial-gradient(120% 90% at 70% 12%, rgba(232,171,107,.22), transparent 55%), linear-gradient(160deg, #26201a, #101012 72%); }
+  .hero-art::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px); background-size: 6px 6px; }
+  .hero-art .pole-strip { position: absolute; left: 26px; top: 26px; bottom: 26px; width: 16px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(0,0,0,.4), inset 0 0 8px rgba(0,0,0,.3); }
+  .hero-art .emblem { position: absolute; inset: 0; display: grid; place-items: center; }
+  .hero-art .emblem .ring { width: 168px; height: 168px; border-radius: 50%; border: 2px solid rgba(232,171,107,.55); display: grid; place-items: center;
+    font-family: var(--ff-head); text-transform: uppercase; text-align: center; color: var(--copper-2); }
+  .hero-art .emblem .ring b { font-size: 15px; letter-spacing: 3px; line-height: 1.3; display: block; }
+  .hero-art .emblem .ring i { font-style: normal; font-size: 34px; }
+  .hero-art .emblem .ring small { font-size: 10px; letter-spacing: 3px; color: var(--muted); display: block; }
+  .float-chip { position: absolute; z-index: 2; background: rgba(16,15,17,.85); backdrop-filter: blur(8px); border: 1px solid var(--line-2); border-radius: 12px; padding: 11px 15px; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+  .float-chip .fc-t { font-family: var(--ff-head); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .float-chip .fc-b { font-family: var(--ff-head); font-size: 19px; font-weight: 600; }
+  .chip-rating { top: 18px; right: 18px; } .chip-rating .stars { color: var(--copper); letter-spacing: 2px; }
+  .chip-open { bottom: 18px; left: 18px; display: flex; align-items: center; gap: 11px; }
+  .chip-open .dot { width: 9px; height: 9px; border-radius: 50%; background: #63c07f; box-shadow: 0 0 0 4px rgba(99,192,127,.16); }
+
+  /* SECTION */
+  section { padding-block: 64px; }
+  .sec-head { text-align: center; max-width: 620px; margin: 0 auto 42px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .sec-head h2 { font-size: clamp(34px, 5vw, 52px); font-weight: 700; }
+  .sec-head p { color: var(--muted); margin: 0; }
+
+  /* USLUGE */
+  .svc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .svc-card { background: linear-gradient(180deg, var(--surface), var(--bg-2)); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+  .svc-card h3 { font-size: 23px; display: flex; align-items: center; gap: 11px; margin-bottom: 16px; letter-spacing: 1px; }
+  .svc-item { display: flex; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .svc-item:first-child { border-top: none; }
+  .svc-item .name { font-size: 15px; color: var(--text); }
+  .svc-item .desc { font-size: 12.5px; color: var(--faint); }
+  .svc-item .lead-dots { flex: 1; border-bottom: 1px dotted var(--line-2); transform: translateY(-4px); }
+  .svc-item .price { font-family: var(--ff-head); font-size: 20px; font-weight: 600; color: var(--copper); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  /* FEATURES */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feat { text-align: center; padding: 28px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(120% 100% at 50% 0%, rgba(207,133,68,.07), transparent 60%); }
+  .feat .fi { width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; background: linear-gradient(135deg, rgba(232,171,107,.16), rgba(154,65,58,.14)); border: 1px solid var(--line-2); }
+  .feat h3 { font-size: 20px; margin-bottom: 8px; letter-spacing: 1px; }
+  .feat p { color: var(--muted); font-size: 14.5px; margin: 0; }
+
+  /* GALLERY */
+  .gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .gal { position: relative; aspect-ratio: 1/1.1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); display: flex; align-items: flex-end; padding: 15px; }
+  .gal::before { content: ""; position: absolute; inset: 0; background: var(--g); }
+  .gal::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 42%, rgba(8,8,9,.8)); }
+  .gal span { position: relative; z-index: 1; font-family: var(--ff-head); font-size: 18px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .gal .tag { position: absolute; top: 13px; left: 13px; z-index: 1; font-family: var(--ff-head); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.8); }
+  .g1 { --g: linear-gradient(150deg, #2c241c, #cf8544 135%); }
+  .g2 { --g: linear-gradient(150deg, #22232a, #7f8894 140%); }
+  .g3 { --g: linear-gradient(150deg, #2a1d1b, #9a413a 130%); }
+  .g4 { --g: linear-gradient(150deg, #241f19, #e8ab6b 150%); }
+  .g5 { --g: linear-gradient(150deg, #1e1e22, #55606d 140%); }
+  .g6 { --g: linear-gradient(150deg, #2b211a, #b06a35 135%); }
+
+  /* TESTIMONIALS */
+  .tst-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .tst { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 13px; }
+  .tst .stars { color: var(--copper); letter-spacing: 2px; font-size: 14px; }
+  .tst p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--text); }
+  .tst .who { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+  .tst .av { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-family: var(--ff-head); font-weight: 600; color: #221609; background: linear-gradient(135deg, var(--copper-2), var(--copper)); font-size: 15px; }
+  .tst .who .nm { font-family: var(--ff-head); font-size: 15px; letter-spacing: .5px; color: var(--text); text-transform: uppercase; }
+  .tst .who .rl { font-size: 12px; color: var(--faint); }
+
+  /* BOOKING */
+  .book { background: linear-gradient(160deg, var(--surface-2), var(--bg-2)); border: 1px solid var(--line-2); border-radius: 18px; padding: 38px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 38px; align-items: center; }
+  .hours { display: flex; flex-direction: column; margin: 20px 0; }
+  .hours .row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .hours .row span:first-child { color: var(--muted); }
+  .hours .row.closed span:last-child { color: var(--oxblood); }
+  .contact-line { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-family: var(--ff-head); font-size: 12px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+  .field input, .field select { background: var(--bg); border: 1px solid var(--line-2); border-radius: 9px; padding: 12px 14px; color: var(--text); font-family: inherit; font-size: 15px; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--copper); }
+  .form .msg { grid-column: 1 / -1; font-size: 13px; color: var(--copper); min-height: 18px; text-align: center; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding-block: 38px 28px; margin-top: 16px; }
+  .foot-grid { display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; flex-wrap: wrap; }
+  .foot-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .foot-links a { font-family: var(--ff-head); text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-size: 14px; }
+  .foot-links a:hover { color: var(--copper); }
+  .foot-note { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--faint); font-size: 12.5px; }
+  .foot-note .credit { color: var(--muted); }
+  .foot-note .credit b { color: var(--copper); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-art { max-width: 400px; margin: 0 auto; width: 100%; }
+    .book { grid-template-columns: 1fr; padding: 28px; }
+    .feat-grid, .tst-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .nav .btn.desk { display: none; }
+    .burger { display: block; }
+    .nav-links.open { display: flex; position: absolute; top: 66px; left: 0; right: 0; flex-direction: column; gap: 0; background: var(--bg-2); border-bottom: 1px solid var(--line); padding: 8px 22px 16px; }
+    .nav-links.open a { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .svc-cols { grid-template-columns: 1fr; }
+    .gal-grid { grid-template-columns: 1fr 1fr; }
+    .trust { gap: 20px; flex-wrap: wrap; }
+    .form { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand"><div class="pole"></div><div class="bt">Britva<small>Barbershop</small></div></div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#usluge">Usluge</a><a href="#iskustvo">Zašto mi</a><a href="#galerija">Galerija</a><a href="#recenzije">Recenzije</a><a href="#kontakt">Kontakt</a>
+    </nav>
+    <a href="#kontakt" class="btn btn-copper desk">Zakaži termin</a>
+    <button class="burger" id="burger" aria-label="Meni">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Muška brijačnica · Kragujevac</span>
+        <h1>Oštar rez.<br><span class="out">Čist stil.</span></h1>
+        <p class="lead">Klasično brijanje toplim peškirom i moderni fade, u opuštenoj atmosferi prave muške brijačnice. Bez žurbe, bez kompromisa.</p>
+        <div class="hero-cta">
+          <a href="#kontakt" class="btn btn-copper">Zakaži termin</a>
+          <a href="#usluge" class="btn btn-ghost">Cenovnik</a>
+        </div>
+        <div class="trust">
+          <div><div class="n">10+</div><div class="l">godina zanata</div></div>
+          <div><div class="n">4.9★</div><div class="l">ocena</div></div>
+          <div><div class="n">15k+</div><div class="l">zadovoljnih</div></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="pole-strip pole"></div>
+        <div class="emblem"><div class="ring"><b>Britva</b><i>✂</i><small>Est. 2014</small></div></div>
+        <div class="float-chip chip-rating"><div class="fc-t">Ocena</div><div class="fc-b"><span class="stars">★★★★★</span> 4.9</div></div>
+        <div class="float-chip chip-open"><span class="dot"></span><div><div class="fc-t">Otvoreno</div><div class="fc-b">Danas do 20h</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="usluge">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Cenovnik</span><h2>Usluge i cene</h2><p>Fer cene, oštra oprema i majstori koji znaju šta rade.</p></div>
+      <div class="svc-cols">
+        <div class="svc-card">
+          <h3>✂️ Kosa</h3>
+          <div class="svc-item"><span class="name">Muško šišanje <span class="desc">· mašinica + makaze</span></span><span class="lead-dots"></span><span class="price">1.000</span></div>
+          <div class="svc-item"><span class="name">Fade / skin fade</span><span class="lead-dots"></span><span class="price">1.300</span></div>
+          <div class="svc-item"><span class="name">Šišanje + pranje kose</span><span class="lead-dots"></span><span class="price">1.200</span></div>
+          <div class="svc-item"><span class="name">Klinci <span class="desc">· do 12 god.</span></span><span class="lead-dots"></span><span class="price">700</span></div>
+        </div>
+        <div class="svc-card">
+          <h3>🪒 Brada i brijanje</h3>
+          <div class="svc-item"><span class="name">Sređivanje brade</span><span class="lead-dots"></span><span class="price">800</span></div>
+          <div class="svc-item"><span class="name">Klasično brijanje britvom <span class="desc">· topao peškir</span></span><span class="lead-dots"></span><span class="price">1.000</span></div>
+          <div class="svc-item"><span class="name">Kombo: šišanje + brada</span><span class="lead-dots"></span><span class="price">1.600</span></div>
+          <div class="svc-item"><span class="name">Kompletan tretman <span class="desc">· kosa, brada, nega</span></span><span class="lead-dots"></span><span class="price">2.200</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="iskustvo" style="padding-top:18px;">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Zašto Britva</span><h2>Zanat, ne fabrika</h2></div>
+      <div class="feat-grid">
+        <div class="feat"><div class="fi">🪒</div><h3>Klasična britva</h3><p>Pravo brijanje toplim peškirom i britvom — osećaj kakav mašinica ne može da pruži.</p></div>
+        <div class="feat"><div class="fi">💪</div><h3>Iskusni majstori</h3><p>Godine za stolicom i oko za detalj. Kažeš šta želiš — mi izvedemo do kraja.</p></div>
+        <div class="feat"><div class="fi">⏱️</div><h3>Bez čekanja</h3><p>Zakazuješ termin i dolaziš na svoje vreme. Bez gužve i praznog hoda.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="galerija">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Naši radovi</span><h2>Galerija</h2><p>Fade, brada i klasika iz naše stolice.</p></div>
+      <div class="gal-grid">
+        <div class="gal g1"><span class="tag">Kosa</span><span>Skin fade</span></div>
+        <div class="gal g2"><span class="tag">Stil</span><span>Pompadour</span></div>
+        <div class="gal g3"><span class="tag">Brada</span><span>Oblikovanje</span></div>
+        <div class="gal g4"><span class="tag">Britva</span><span>Klasik brijanje</span></div>
+        <div class="gal g5"><span class="tag">Kombo</span><span>Kosa + brada</span></div>
+        <div class="gal g6"><span class="tag">Detalj</span><span>Linije &amp; ivice</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recenzije">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Recenzije</span><h2>Šta kažu mušterije</h2></div>
+      <div class="tst-grid">
+        <div class="tst"><div class="stars">★★★★★</div><p>„Najbolji fade u gradu, bukvalno. Momci znaju posao i uvek je opuštena atmosfera.”</p><div class="who"><div class="av">SM</div><div><div class="nm">Stefan M.</div><div class="rl">redovan gost</div></div></div></div>
+        <div class="tst"><div class="stars">★★★★★</div><p>„Brijanje britvom i topao peškir — dođem samo zbog toga. Prava muška brijačnica.”</p><div class="who"><div class="av">NP</div><div><div class="nm">Nikola P.</div><div class="rl">mušterija 3 god.</div></div></div></div>
+        <div class="tst"><div class="stars">★★★★★</div><p>„Doveo sam i sina, obojica presrećni. Termin na vreme, bez čekanja.”</p><div class="who"><div class="av">DA</div><div><div class="nm">Dejan A.</div><div class="rl">tata + sin</div></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kontakt">
+    <div class="wrap">
+      <div class="book">
+        <div class="book-info">
+          <span class="eyebrow">Rezervacija</span>
+          <h2 style="font-size:34px;margin:12px 0 6px;">Rezerviši stolicu</h2>
+          <p style="color:var(--muted);margin:0;">Popuni formu ili nas pozovi — potvrđujemo termin u par minuta.</p>
+          <div class="hours">
+            <div class="row"><span>Ponedeljak – Petak</span><span>09:00 – 20:00</span></div>
+            <div class="row"><span>Subota</span><span>08:00 – 17:00</span></div>
+            <div class="row closed"><span>Nedelja</span><span>Ne radimo</span></div>
+          </div>
+          <div class="contact-line">📍 Kralja Petra I 12, Kragujevac</div>
+          <div class="contact-line">📞 <a href="tel:+381340000000" style="color:var(--copper)">034 / 000-000</a></div>
+          <div class="contact-line">📷 <a href="#" style="color:var(--copper)">@britva.barbershop</a></div>
+        </div>
+        <form class="form" id="bookForm">
+          <div class="field"><label for="f_ime">Ime</label><input id="f_ime" type="text" placeholder="Vaše ime" required></div>
+          <div class="field"><label for="f_tel">Telefon</label><input id="f_tel" type="tel" placeholder="06x xxx xxxx" required></div>
+          <div class="field"><label for="f_usluga">Usluga</label>
+            <select id="f_usluga"><option>Muško šišanje</option><option>Fade / Skin fade</option><option>Sređivanje brade</option><option>Brijanje britvom</option><option>Kombo: kosa + brada</option><option>Kompletan tretman</option></select>
+          </div>
+          <div class="field"><label for="f_datum">Željeni datum</label><input id="f_datum" type="date"></div>
+          <div class="field full"><button type="submit" class="btn btn-copper" style="width:100%;">Pošalji zahtev za termin</button></div>
+          <div class="msg" id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="brand"><div class="pole" style="width:7px;height:34px;border-radius:4px;"></div><div class="bt">Britva<small>Barbershop · Kragujevac</small></div></div>
+      <div class="foot-links"><a href="#usluge">Usluge</a><a href="#galerija">Galerija</a><a href="#recenzije">Recenzije</a><a href="#kontakt">Zakazivanje</a></div>
+    </div>
+    <div class="foot-note">
+      <span>© <span id="year"></span> Britva Barbershop. Sva prava zadržana.</span>
+      <span class="credit">Dizajn &amp; izrada sajta: <b>@vaš_instagram</b></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    document.getElementById("year").textContent = new Date().getFullYear();
+    var burger = document.getElementById("burger"), links = document.getElementById("navLinks");
+    burger.addEventListener("click", function () { links.classList.toggle("open"); });
+    links.addEventListener("click", function (e) { if (e.target.tagName === "A") links.classList.remove("open"); });
+    var form = document.getElementById("bookForm"), msg = document.getElementById("formMsg");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ime = document.getElementById("f_ime").value.trim() || "";
+      msg.textContent = "Hvala" + (ime ? ", " + ime : "") + "! Zahtev je primljen — javljamo se za potvrdu termina. (demo)";
+      form.querySelector("button").textContent = "✔ Zahtev poslat";
+      setTimeout(function () { form.querySelector("button").textContent = "Pošalji zahtev za termin"; }, 4000);
+    });
+  })();
+</script>
+</body>
+</html>
