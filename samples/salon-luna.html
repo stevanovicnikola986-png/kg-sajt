@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Ateljé Luna</title>
+<meta name="description" content="Salon lepote — frizerski i kozmetički studio. Demo sajt." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #0e0a0c;
+    --bg-2: #150f13;
+    --surface: #1a1318;
+    --surface-2: #211820;
+    --line: #2c2029;
+    --line-2: #3a2b34;
+    --text: #f5edea;
+    --muted: #b6a6a5;
+    --faint: #7d6e70;
+    --gold: #c9a86a;
+    --gold-2: #ecd6a3;
+    --rose: #d0938d;
+    --plum: #7a5566;
+    --radius: 18px;
+    --shadow: 0 24px 60px rgba(0,0,0,.5);
+    --ff-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --ff-sans: "Jost", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--ff-sans); font-weight: 300; font-size: 16px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(900px 500px at 82% -6%, rgba(201,168,106,.10), transparent 60%),
+      radial-gradient(700px 420px at -8% 22%, rgba(208,147,141,.08), transparent 60%);
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { font-family: var(--ff-serif); font-weight: 600; margin: 0; line-height: 1.08; text-wrap: balance; letter-spacing: .2px; }
+  .wrap { width: 100%; max-width: 1140px; margin: 0 auto; padding-inline: 22px; }
+  .eyebrow { font-size: 12px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold);
+    font-weight: 500; display: inline-flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ""; width: 30px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+  .gold-text { color: var(--gold); }
+  .serif-it { font-style: italic; color: var(--rose); }
+
+  /* NAV */
+  header.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40;
+    backdrop-filter: blur(14px); background: rgba(14,10,12,.72); border-bottom: 1px solid var(--line); }
+  .nav-inner { display: flex; align-items: center; gap: 20px; height: 68px; }
+  .brand { font-family: var(--ff-serif); font-size: 23px; font-weight: 700; letter-spacing: 1px; }
+  .brand small { display: block; font-family: var(--ff-sans); font-size: 9px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-top: -3px; font-weight: 500; }
+  .nav-links { display: flex; gap: 28px; margin-left: auto; }
+  .nav-links a { font-size: 14px; color: var(--muted); letter-spacing: .3px; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--ff-sans);
+    font-weight: 500; font-size: 14px; letter-spacing: .5px; padding: 12px 22px; border-radius: 100px; cursor: pointer;
+    border: 1px solid transparent; transition: transform .15s, box-shadow .2s, background .2s, color .2s; }
+  .btn-gold { background: linear-gradient(135deg, var(--gold-2), var(--gold)); color: #241a10;
+    box-shadow: 0 10px 26px rgba(201,168,106,.28); font-weight: 600; }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(201,168,106,.4); }
+  .btn-ghost { border-color: var(--line-2); color: var(--text); background: transparent; }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .nav .btn { padding: 10px 20px; }
+  .burger { display: none; margin-left: auto; background: none; border: 1px solid var(--line-2); color: var(--text);
+    width: 42px; height: 42px; border-radius: 12px; font-size: 18px; cursor: pointer; }
+
+  /* HERO */
+  .hero { padding-block: 74px 60px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 54px; align-items: center; }
+  .hero h1 { font-size: clamp(42px, 6.4vw, 74px); margin: 22px 0 18px; }
+  .hero p.lead { color: var(--muted); font-size: 18px; max-width: 46ch; margin: 0 0 30px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .trust { display: flex; gap: 34px; margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--line); }
+  .trust .n { font-family: var(--ff-serif); font-size: 34px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .trust .l { font-size: 12.5px; color: var(--faint); letter-spacing: .4px; margin-top: 6px; }
+
+  /* Hero visual (bez fotografija — duotone kompozicija) */
+  .hero-art { position: relative; aspect-ratio: 4/5; border-radius: 26px; overflow: hidden;
+    border: 1px solid var(--line-2); box-shadow: var(--shadow);
+    background:
+      radial-gradient(120% 90% at 30% 15%, rgba(236,214,163,.30), transparent 55%),
+      radial-gradient(120% 120% at 80% 100%, rgba(122,85,102,.55), transparent 55%),
+      linear-gradient(160deg, #2a1f27, #140e13 70%); }
+  .hero-art::after { content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px); background-size: 5px 5px; opacity: .5; }
+  .hero-art .glow { position: absolute; width: 62%; height: 62%; left: 19%; top: 14%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(236,214,163,.5), rgba(208,147,141,.18) 45%, transparent 70%); filter: blur(6px); }
+  .hero-art .frame { position: absolute; inset: 16px; border: 1px solid rgba(236,214,163,.35); border-radius: 18px; }
+  .float-chip { position: absolute; z-index: 2; background: rgba(20,15,18,.82); backdrop-filter: blur(8px);
+    border: 1px solid var(--line-2); border-radius: 14px; padding: 12px 16px; box-shadow: 0 12px 30px rgba(0,0,0,.4); }
+  .float-chip .fc-t { font-size: 12px; color: var(--muted); letter-spacing: .3px; }
+  .float-chip .fc-b { font-family: var(--ff-serif); font-size: 20px; font-weight: 700; color: var(--text); }
+  .chip-rating { top: 22px; left: -14px; }
+  .chip-rating .stars { color: var(--gold); letter-spacing: 2px; }
+  .chip-book { bottom: 24px; right: -14px; display: flex; align-items: center; gap: 12px; }
+  .chip-book .dot { width: 9px; height: 9px; border-radius: 50%; background: #6fcf97; box-shadow: 0 0 0 4px rgba(111,207,151,.15); }
+
+  /* SECTION */
+  section { padding-block: 68px; }
+  .sec-head { text-align: center; max-width: 620px; margin: 0 auto 46px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .sec-head h2 { font-size: clamp(32px, 4.6vw, 48px); }
+  .sec-head p { color: var(--muted); margin: 0; }
+
+  /* USLUGE */
+  .svc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .svc-card { background: linear-gradient(180deg, var(--surface), var(--bg-2)); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 28px 28px 24px; }
+  .svc-card h3 { font-size: 26px; display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .svc-card h3 .ic { font-size: 20px; }
+  .svc-list { display: flex; flex-direction: column; }
+  .svc-item { display: flex; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px dashed var(--line); }
+  .svc-item:first-child { border-top: none; }
+  .svc-item .name { font-size: 15px; color: var(--text); font-weight: 400; }
+  .svc-item .desc { font-size: 12.5px; color: var(--faint); }
+  .svc-item .lead-dots { flex: 1; border-bottom: 1px dotted var(--line-2); transform: translateY(-4px); }
+  .svc-item .price { font-family: var(--ff-serif); font-size: 19px; font-weight: 700; color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  /* FEATURES */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feat { text-align: center; padding: 30px 24px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: radial-gradient(120% 100% at 50% 0%, rgba(201,168,106,.06), transparent 60%); }
+  .feat .fi { width: 58px; height: 58px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 24px; background: linear-gradient(135deg, rgba(236,214,163,.16), rgba(208,147,141,.12)); border: 1px solid var(--line-2); }
+  .feat h3 { font-size: 22px; margin-bottom: 8px; }
+  .feat p { color: var(--muted); font-size: 14.5px; margin: 0; }
+
+  /* GALLERY */
+  .gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .gal { position: relative; aspect-ratio: 1/1.15; border-radius: 16px; overflow: hidden; border: 1px solid var(--line);
+    display: flex; align-items: flex-end; padding: 16px; }
+  .gal::before { content: ""; position: absolute; inset: 0; opacity: .95; background: var(--g); }
+  .gal::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(10,7,9,.75)); }
+  .gal span { position: relative; z-index: 1; font-family: var(--ff-serif); font-size: 19px; font-weight: 600; }
+  .gal .tag { position: absolute; top: 14px; left: 14px; z-index: 1; font-family: var(--ff-sans); font-size: 10.5px;
+    letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.85); }
+  .g1 { --g: linear-gradient(150deg, #3a2a33, #d0938d 130%); }
+  .g2 { --g: linear-gradient(150deg, #2c2230, #c9a86a 140%); }
+  .g3 { --g: linear-gradient(150deg, #33232b, #7a5566 130%); }
+  .g4 { --g: linear-gradient(150deg, #2a2130, #ecd6a3 150%); }
+  .g5 { --g: linear-gradient(150deg, #3a2a2a, #b07f79 130%); }
+  .g6 { --g: linear-gradient(150deg, #241d29, #9c7d5a 140%); }
+
+  /* TESTIMONIALS */
+  .tst-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .tst { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .tst .stars { color: var(--gold); letter-spacing: 2px; font-size: 14px; }
+  .tst p { margin: 0; color: var(--text); font-family: var(--ff-serif); font-style: italic; font-size: 19px; line-height: 1.45; }
+  .tst .who { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+  .tst .av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; color: #241a10;
+    background: linear-gradient(135deg, var(--gold-2), var(--rose)); font-size: 15px; }
+  .tst .who .nm { font-size: 14px; font-weight: 500; color: var(--text); }
+  .tst .who .rl { font-size: 12px; color: var(--faint); }
+
+  /* BOOKING */
+  .book { background: linear-gradient(160deg, var(--surface-2), var(--bg-2)); border: 1px solid var(--line-2); border-radius: 24px;
+    padding: 40px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center; }
+  .hours { display: flex; flex-direction: column; gap: 2px; margin: 22px 0; }
+  .hours .row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .hours .row span:first-child { color: var(--muted); }
+  .hours .row.closed span:last-child { color: var(--rose); }
+  .contact-line { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 12px; letter-spacing: .5px; color: var(--muted); text-transform: uppercase; }
+  .field input, .field select { background: var(--bg); border: 1px solid var(--line-2); border-radius: 11px; padding: 12px 14px;
+    color: var(--text); font-family: inherit; font-size: 15px; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--gold); }
+  .form .msg { grid-column: 1 / -1; font-size: 13px; color: var(--gold); min-height: 18px; text-align: center; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding-block: 40px 30px; margin-top: 20px; }
+  .foot-grid { display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; flex-wrap: wrap; }
+  .foot-links { display: flex; gap: 26px; flex-wrap: wrap; }
+  .foot-links a { color: var(--muted); font-size: 14px; }
+  .foot-links a:hover { color: var(--gold); }
+  .foot-note { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; color: var(--faint); font-size: 12.5px; }
+  .foot-note .credit { color: var(--muted); }
+  .foot-note .credit b { color: var(--gold); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+    .hero-art { max-width: 420px; margin: 0 auto; width: 100%; }
+    .book { grid-template-columns: 1fr; padding: 30px; }
+    .feat-grid, .tst-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .nav .btn.desk { display: none; }
+    .burger { display: block; }
+    .nav-links.open { display: flex; position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; gap: 0;
+      background: var(--bg-2); border-bottom: 1px solid var(--line); padding: 8px 22px 16px; }
+    .nav-links.open a { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .svc-cols { grid-template-columns: 1fr; }
+    .gal-grid { grid-template-columns: 1fr 1fr; }
+    .trust { gap: 22px; flex-wrap: wrap; }
+    .form { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">Ateljé Luna<small>Salon lepote</small></div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#usluge">Usluge</a>
+      <a href="#iskustvo">Zašto mi</a>
+      <a href="#galerija">Galerija</a>
+      <a href="#recenzije">Recenzije</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <a href="#kontakt" class="btn btn-gold desk">Zakaži termin</a>
+    <button class="burger" id="burger" aria-label="Meni">☰</button>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Salon lepote · Kragujevac</span>
+        <h1>Lepota <span class="serif-it">isklesana</span><br>s pažnjom.</h1>
+        <p class="lead">Frizerski i kozmetički studio u kome svaki tretman prilagođavamo vama — od svakodnevne nege do svečanih trenutaka koji se pamte.</p>
+        <div class="hero-cta">
+          <a href="#kontakt" class="btn btn-gold">Zakaži termin</a>
+          <a href="#usluge" class="btn btn-ghost">Pogledaj usluge</a>
+        </div>
+        <div class="trust">
+          <div><div class="n">12+</div><div class="l">godina iskustva</div></div>
+          <div><div class="n">4.9★</div><div class="l">prosečna ocena</div></div>
+          <div><div class="n">6k+</div><div class="l">zadovoljnih klijentkinja</div></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="glow"></div>
+        <div class="frame"></div>
+        <div class="float-chip chip-rating">
+          <div class="fc-t">Ocena klijentkinja</div>
+          <div class="fc-b"><span class="stars">★★★★★</span> 4.9</div>
+        </div>
+        <div class="float-chip chip-book">
+          <span class="dot"></span>
+          <div><div class="fc-t">Sledeći slobodan termin</div><div class="fc-b">Danas, 17:30</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USLUGE -->
+  <section id="usluge">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Cenovnik</span>
+        <h2>Usluge i cene</h2>
+        <p>Transparentne cene, vrhunski proizvodi i posvećenost svakom detalju.</p>
+      </div>
+      <div class="svc-cols">
+        <div class="svc-card">
+          <h3><span class="ic">✂️</span> Frizerski salon</h3>
+          <div class="svc-list">
+            <div class="svc-item"><span class="name">Žensko šišanje <span class="desc">· pranje + feniranje</span></span><span class="lead-dots"></span><span class="price">1.800</span></div>
+            <div class="svc-item"><span class="name">Feniranje i styling</span><span class="lead-dots"></span><span class="price">1.200</span></div>
+            <div class="svc-item"><span class="name">Farbanje <span class="desc">· jedna boja</span></span><span class="lead-dots"></span><span class="price">3.500</span></div>
+            <div class="svc-item"><span class="name">Balayage / pramenovi</span><span class="lead-dots"></span><span class="price">6.500</span></div>
+            <div class="svc-item"><span class="name">Svečana frizura</span><span class="lead-dots"></span><span class="price">4.000</span></div>
+          </div>
+        </div>
+        <div class="svc-card">
+          <h3><span class="ic">💅</span> Kozmetika i nokti</h3>
+          <div class="svc-list">
+            <div class="svc-item"><span class="name">Manikir + gel lak</span><span class="lead-dots"></span><span class="price">1.500</span></div>
+            <div class="svc-item"><span class="name">Nadogradnja noktiju</span><span class="lead-dots"></span><span class="price">2.500</span></div>
+            <div class="svc-item"><span class="name">Nega lica <span class="desc">· dubinsko čišćenje</span></span><span class="lead-dots"></span><span class="price">3.000</span></div>
+            <div class="svc-item"><span class="name">Profesionalna šminka</span><span class="lead-dots"></span><span class="price">3.500</span></div>
+            <div class="svc-item"><span class="name">Trepavice <span class="desc">· volumen</span></span><span class="lead-dots"></span><span class="price">2.800</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ISKUSTVO -->
+  <section id="iskustvo" style="padding-top:20px;">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Zašto Ateljé Luna</span>
+        <h2>Iskustvo koje se oseti</h2>
+      </div>
+      <div class="feat-grid">
+        <div class="feat"><div class="fi">🌿</div><h3>Vrhunski proizvodi</h3><p>Radimo isključivo profesionalnom kozmetikom pouzdanih brendova, bezbednom za kožu i kosu.</p></div>
+        <div class="feat"><div class="fi">👐</div><h3>Iskusan tim</h3><p>Naši stilisti prate najnovije trendove i savetuju vas iskreno — rezultat prilagođen baš vama.</p></div>
+        <div class="feat"><div class="fi">🕯️</div><h3>Prijatan ambijent</h3><p>Miran, elegantan prostor u kome se opuštate dok mi brinemo o svakom detalju.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIJA -->
+  <section id="galerija">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Naši radovi</span>
+        <h2>Galerija</h2>
+        <p>Delić atmosfere i rezultata iz našeg studija.</p>
+      </div>
+      <div class="gal-grid">
+        <div class="gal g1"><span class="tag">Kosa</span><span>Balayage</span></div>
+        <div class="gal g2"><span class="tag">Styling</span><span>Svečane frizure</span></div>
+        <div class="gal g3"><span class="tag">Nokti</span><span>Nail art</span></div>
+        <div class="gal g4"><span class="tag">Šminka</span><span>Glam look</span></div>
+        <div class="gal g5"><span class="tag">Nega</span><span>Tretmani lica</span></div>
+        <div class="gal g6"><span class="tag">Boja</span><span>Prelivi &amp; nijanse</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENZIJE -->
+  <section id="recenzije">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Recenzije</span>
+        <h2>Šta kažu klijentkinje</h2>
+      </div>
+      <div class="tst-grid">
+        <div class="tst"><div class="stars">★★★★★</div><p>„Prvi put da sam potpuno zadovoljna balayage-om. Tačno kako sam zamislila, a devojke su predivne.”</p><div class="who"><div class="av">MJ</div><div><div class="nm">Milica J.</div><div class="rl">redovna klijentkinja</div></div></div></div>
+        <div class="tst"><div class="stars">★★★★★</div><p>„Šminkanje za venčanje je izdržalo ceo dan i sve suze sreće. Preporuka od srca!”</p><div class="who"><div class="av">AS</div><div><div class="nm">Ana S.</div><div class="rl">mlada</div></div></div></div>
+        <div class="tst"><div class="stars">★★★★★</div><p>„Ambijent, ljubaznost i rezultat — sve na najvišem nivou. Moj salon zauvek.”</p><div class="who"><div class="av">JT</div><div><div class="nm">Jelena T.</div><div class="rl">klijentkinja 5+ god.</div></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT / ZAKAZIVANJE -->
+  <section id="kontakt">
+    <div class="wrap">
+      <div class="book">
+        <div class="book-info">
+          <span class="eyebrow">Rezervacija</span>
+          <h2 style="font-size:34px;margin:14px 0 6px;">Zakažite svoj termin</h2>
+          <p style="color:var(--muted);margin:0;">Popunite formu ili nas pozovite — javljamo se u najkraćem roku.</p>
+          <div class="hours">
+            <div class="row"><span>Ponedeljak – Petak</span><span>09:00 – 20:00</span></div>
+            <div class="row"><span>Subota</span><span>09:00 – 16:00</span></div>
+            <div class="row closed"><span>Nedelja</span><span>Ne radimo</span></div>
+          </div>
+          <div class="contact-line">📍 Kralja Petra I 24, Kragujevac</div>
+          <div class="contact-line">📞 <a href="tel:+381340000000" style="color:var(--gold)">034 / 000-000</a></div>
+          <div class="contact-line">📷 <a href="#" style="color:var(--gold)">@atelje.luna</a></div>
+        </div>
+        <form class="form" id="bookForm">
+          <div class="field"><label for="f_ime">Ime i prezime</label><input id="f_ime" type="text" placeholder="Vaše ime" required></div>
+          <div class="field"><label for="f_tel">Telefon</label><input id="f_tel" type="tel" placeholder="06x xxx xxxx" required></div>
+          <div class="field"><label for="f_usluga">Usluga</label>
+            <select id="f_usluga">
+              <option>Žensko šišanje</option><option>Farbanje / Balayage</option><option>Svečana frizura</option>
+              <option>Manikir / Nokti</option><option>Nega lica</option><option>Šminka</option>
+            </select>
+          </div>
+          <div class="field"><label for="f_datum">Željeni datum</label><input id="f_datum" type="date"></div>
+          <div class="field full"><button type="submit" class="btn btn-gold" style="width:100%;">Pošalji zahtev za termin</button></div>
+          <div class="msg" id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="brand">Ateljé Luna<small>Salon lepote · Kragujevac</small></div>
+      <div class="foot-links">
+        <a href="#usluge">Usluge</a><a href="#galerija">Galerija</a><a href="#recenzije">Recenzije</a><a href="#kontakt">Zakazivanje</a>
+      </div>
+    </div>
+    <div class="foot-note">
+      <span>© <span id="year"></span> Ateljé Luna. Sva prava zadržana.</span>
+      <span class="credit">Dizajn &amp; izrada sajta: <b>@vaš_instagram</b></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    document.getElementById("year").textContent = new Date().getFullYear();
+    var burger = document.getElementById("burger"), links = document.getElementById("navLinks");
+    burger.addEventListener("click", function () { links.classList.toggle("open"); });
+    links.addEventListener("click", function (e) { if (e.target.tagName === "A") links.classList.remove("open"); });
+    var form = document.getElementById("bookForm"), msg = document.getElementById("formMsg");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ime = document.getElementById("f_ime").value.trim() || "";
+      msg.textContent = "Hvala" + (ime ? ", " + ime : "") + "! Zahtev je zabeležen — javićemo vam se za potvrdu termina. (demo)";
+      form.querySelector("button").textContent = "✔ Zahtev poslat";
+      setTimeout(function () { form.querySelector("button").textContent = "Pošalji zahtev za termin"; }, 4000);
+    });
+  })();
+</script>
+</body>
+</html>
