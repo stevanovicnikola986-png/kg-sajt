@@ -293,6 +293,13 @@
   .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { border: none; background: transparent; color: var(--text-soft); font-weight: 700; font-size: 12.5px; padding: 6px 12px; border-radius: 7px; cursor: pointer; }
   .seg button.on { background: var(--accent-soft); color: var(--text); }
+  .chan-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .chan-tab { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 12px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-soft); font-weight: 600; font-size: 13.5px; transition: all .13s; }
+  .chan-tab:hover { color: var(--text); border-color: var(--border); background: var(--surface-2); }
+  .chan-tab.on { background: var(--accent-soft); color: var(--text); border-color: color-mix(in srgb, var(--accent) 34%, var(--border)); }
+  .chan-tab .ct-n { font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 20px; background: var(--surface-3); color: var(--text-soft); }
+  .chan-tab.on .ct-n { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
   .settings-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; }
   .setrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 17px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
   .setrow .st { font-weight: 700; font-size: 14px; } .setrow .ss { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
@@ -348,7 +355,7 @@
           <div class="panel chart-panel">
             <div class="panel-head">
               <div><div class="panel-title">Levak konverzije</div><div class="panel-sub" id="chartSub">Kako se leadovi kreću kroz faze</div></div>
-              <div class="seg" id="chartChannel"><button data-ch="message" class="on">💬 Poruke</button><button data-ch="cold">📞 Pozivi</button></div>
+              <div class="seg" id="chartChannel"><button data-ch="instagram">📸 IG</button><button data-ch="facebook">👍 FB</button><button data-ch="gmail" class="on">✉️ Gmail</button><button data-ch="cold">📞 Pozivi</button></div>
             </div>
             <div class="chart-total" id="chartTotal"></div>
             <div class="area-wrap" id="areaWrap"></div>
@@ -366,7 +373,8 @@
 
       <!-- MESSAGE -->
       <section class="view" id="view-message">
-        <div class="section-label">Outreach metrike <span class="sl-line"></span>
+        <div class="chan-tabs" id="chanTabs"></div>
+        <div class="section-label"><span id="chanMetricTitle">Outreach metrike</span> <span class="sl-line"></span>
           <span class="seg" id="metricMode"><button data-mode="manual">Manual</button><button data-mode="calculated">Iz leadova</button></span>
           <button class="btn sm" id="editMetricsBtn">✏️ Edit Metrics</button>
           <button class="btn sm primary" id="saveMetricsBtn" style="display:none">✔ Save</button>
@@ -552,11 +560,21 @@
     { key: "offers",     label: "Poslate ponude", icon: "📤", c: "#a78bfa" },
     { key: "won",        label: "Won",            icon: "✅", c: "#34d399" },
   ];
+  // Individualni message kanali (svaki svoj levak)
+  const CHANNELS = [
+    { key: "instagram", label: "Instagram DM",   short: "Instagram", icon: "📸", platform: "Instagram" },
+    { key: "facebook",  label: "Facebook",       short: "Facebook",  icon: "👍", platform: "Facebook" },
+    { key: "gmail",     label: "Gmail / Email",  short: "Gmail",     icon: "✉️", platform: "Email" },
+  ];
+  const STAGE_KEYS = ["sent", "replies", "accepted", "positive", "booked", "held", "won"];
+  const blankFunnel = () => ({ sent: 0, replies: 0, accepted: 0, positive: 0, booked: 0, held: 0, won: 0 });
+  // Realni startni brojevi za Gmail (prebrojano iz poslatih mejlova)
+  const GMAIL_SEED = { sent: 30, replies: 2, accepted: 1, positive: 1, booked: 0, held: 0, won: 0 };
 
   // ---------- State ----------
   function defaultState() {
-    return { version: 2, settings: { theme: "dark", currency: "€", metricMode: "manual" },
-      messageMetrics: { sent: 0, replies: 0, accepted: 0, positive: 0, booked: 0, held: 0, won: 0 },
+    return { version: 3, settings: { theme: "dark", currency: "€", metricMode: "manual" },
+      channels: { instagram: blankFunnel(), facebook: blankFunnel(), gmail: blankFunnel() },
       leads: [], prospects: [], seeded: false };
   }
   function normLead(l) {
@@ -574,7 +592,13 @@
   function normalize(d) {
     const s = defaultState(); if (!d) return s;
     Object.assign(s.settings, d.settings || {});
-    if (d.messageMetrics) Object.keys(s.messageMetrics).forEach(k => s.messageMetrics[k] = num(d.messageMetrics[k]));
+    CHANNELS.forEach(ch => {
+      const src = d.channels && d.channels[ch.key];
+      s.channels[ch.key] = blankFunnel();
+      if (src) STAGE_KEYS.forEach(k => s.channels[ch.key][k] = num(src[k]));
+    });
+    // Prvi prelazak na kanale (nema saved 'channels') → ubaci realne Gmail brojeve
+    if (!d.channels) s.channels.gmail = Object.assign({}, GMAIL_SEED);
     s.leads = Array.isArray(d.leads) ? d.leads.map(normLead) : [];
     s.prospects = Array.isArray(d.prospects) ? d.prospects.map(normProspect) : [];
     s.seeded = !!d.seeded; return s;
@@ -584,39 +608,29 @@
 
   let state = load();
   let firstRun = false;
-  if (!state) { state = defaultState(); firstRun = true; save(); }
+  if (!state) { state = defaultState(); state.channels.gmail = Object.assign({}, GMAIL_SEED); firstRun = true; save(); }
 
-  function seed() {
-    state.messageMetrics = { sent: 240, replies: 71, accepted: 44, positive: 27, booked: 14, held: 9, won: 4 };
-    const dAgo = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
-    state.leads = [
-      { name: "Ivana Jovanović", company: "Cvećara Lala", platform: "Instagram", contact: "@cvecara_lala", date: dAgo(2), sent: true, replied: true, site: true, positive: true, booked: true, held: false, sale: false, status: "zakazan", notes: "Traži moderan sajt sa online porudžbinom.", demo: true },
-      { name: "Nikola Marković", company: "Auto servis NM", platform: "Facebook", contact: "auto.nm@gmail.com", date: dAgo(5), sent: true, replied: true, site: true, positive: true, booked: true, held: true, sale: true, status: "won", deal: 450, notes: "Zatvoreno! Landing + booking forma.", demo: true },
-      { name: "Sara Đorđević", company: "Studio Sara", platform: "Instagram", contact: "@studio.sara", date: dAgo(1), sent: true, replied: true, site: false, positive: false, booked: false, held: false, sale: false, status: "odgovorio", notes: "Odgovorila, čekam da pošaljem portfolio.", demo: true },
-      { name: "Marko Ilić", company: "Teretana Titan", platform: "Email", contact: "info@titan.rs", date: dAgo(8), sent: true, replied: false, site: false, positive: false, booked: false, held: false, sale: false, status: "kontaktiran", notes: "Poslata prva poruka, bez odgovora.", demo: true },
-    ].map(normLead);
-    state.prospects = [
-      { company: "Restoran Stara Vodenica", person: "Dragan", phone: "+381641234567", maps: "https://maps.google.com/?q=Stara+Vodenica", location: "Kragujevac, centar", date: dAgo(1), status: "prospekt", notes: "Nemaju sajt, samo FB stranu.", demo: true },
-      { company: "Pekara Zlatno Zrno", person: "Milica", phone: "+381652345678", email: "pekara@zrno.rs", maps: "https://maps.google.com/?q=Zlatno+Zrno", location: "Kragujevac, Aerodrom", date: dAgo(3), status: "kontaktiran", notes: "Zvao, javiće se sutra.", demo: true },
-      { company: "Frizerski salon Bella", person: "Ana", phone: "+381663456789", maps: "https://maps.google.com/?q=Salon+Bella", website: "https://bella-staro.rs", location: "Beograd, Vračar", date: dAgo(4), status: "zainteresovan", notes: "Zainteresovana, stari sajt je loš.", demo: true },
-      { company: "Stomatologija Dent+", person: "Dr Petrović", phone: "+381667778899", email: "ordinacija@dentplus.rs", maps: "https://maps.google.com/?q=Dent+Plus", location: "Novi Sad", date: dAgo(6), status: "ponuda", notes: "Poslata ponuda 600€, čeka odgovor.", demo: true },
-      { company: "Cvećara Orhideja", person: "Jelena", phone: "+381691112233", maps: "https://maps.google.com/?q=Orhideja", location: "Kragujevac", date: dAgo(10), status: "won", notes: "Ugovoreno! Sajt + Instagram setup.", demo: true, deal: 380 },
-      { company: "Kafić Kaldrma", phone: "+381603334455", maps: "https://maps.google.com/?q=Kaldrma", website: "https://kaldrma.rs", location: "Beograd", date: dAgo(9), status: "odbijen", notes: "Zadovoljni postojećim sajtom.", demo: true },
-    ].map(normProspect);
-    state.seeded = true;
-  }
 
   // ---------- Toast ----------
   let toastTimer;
   function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200); }
 
   // ---------- Derived ----------
-  function calcMessageMetrics() {
-    const c = { sent: 0, replies: 0, accepted: 0, positive: 0, booked: 0, held: 0, won: 0 };
-    for (const l of state.leads) { if (l.sent) c.sent++; if (l.replied) c.replies++; if (l.site) c.accepted++; if (l.positive) c.positive++; if (l.booked) c.booked++; if (l.held) c.held++; if (l.sale) c.won++; }
+  function calcChannelFromLeads(platform) {
+    const c = blankFunnel();
+    for (const l of state.leads) { if (l.platform !== platform) continue; if (l.sent) c.sent++; if (l.replied) c.replies++; if (l.site) c.accepted++; if (l.positive) c.positive++; if (l.booked) c.booked++; if (l.held) c.held++; if (l.sale) c.won++; }
     return c;
   }
-  function messageMetrics() { return state.settings.metricMode === "calculated" ? calcMessageMetrics() : state.messageMetrics; }
+  function channelMetrics(key) {
+    const ch = CHANNELS.find(c => c.key === key);
+    return state.settings.metricMode === "calculated" ? calcChannelFromLeads(ch.platform) : state.channels[key];
+  }
+  // Zbir svih message kanala (kombinovano)
+  function messageMetrics() {
+    const t = blankFunnel();
+    CHANNELS.forEach(ch => { const m = channelMetrics(ch.key); STAGE_KEYS.forEach(k => t[k] += m[k]); });
+    return t;
+  }
   function coldMetrics() {
     const rank = { prospekt: 0, kontaktiran: 1, zainteresovan: 2, ponuda: 3, won: 4, odbijen: 1 };
     const m = { total: state.prospects.length, contacted: 0, interested: 0, offers: 0, won: 0, rejected: 0 };
@@ -660,9 +674,16 @@
 
   // ---------- MESSAGE ----------
   let editingMetrics = false;
+  let msgChannel = "gmail";
   function renderMessage() {
     const canEdit = state.settings.metricMode === "manual";
-    const vals = messageMetrics();
+    const ch = CHANNELS.find(c => c.key === msgChannel) || CHANNELS[0];
+    const vals = channelMetrics(msgChannel);
+    $("chanTabs").innerHTML = CHANNELS.map(c => {
+      const t = channelMetrics(c.key);
+      return `<div class="chan-tab${c.key === msgChannel ? " on" : ""}" data-chan="${c.key}"><span>${c.icon}</span>${esc(c.label)} <span class="ct-n">${fmtNum(t.sent)}</span></div>`;
+    }).join("");
+    $("chanMetricTitle").textContent = ch.icon + " " + ch.label + " — metrike";
     $("msgKpis").innerHTML = MSG_METRICS.map(m => kpiCard(m, vals[m.key], canEdit && editingMetrics)).join("");
     $("msgConv").innerHTML = MSG_CONV.map(c => convCard(c, vals)).join("");
     document.querySelectorAll("#metricMode button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.settings.metricMode));
@@ -757,7 +778,7 @@
   // ---------- DASHBOARD ----------
   const SHORT = { sent:"Poruke", replies:"Odgovori", accepted:"Sajt", positive:"Utisci", booked:"Zakazani", held:"Održani", won:"Prodaje", total:"Prospekti", contacted:"Kontakt", interested:"Interes", offers:"Ponude" };
   const short = (k) => SHORT[k] || k;
-  let dashChannel = "message";
+  let dashChannel = "gmail";
 
   function renderDash() {
     const mm = messageMetrics(), cm = coldMetrics();
@@ -792,22 +813,26 @@
   }
 
   function renderAreaPanel(mm, cm) {
-    const isMsg = dashChannel === "message";
-    const defs = isMsg ? MSG_METRICS : COLD_FUNNEL;
-    const vals = defs.map(d => (isMsg ? mm : cm)[d.key]);
+    const isCold = dashChannel === "cold";
+    const defs = isCold ? COLD_FUNNEL : MSG_METRICS;
+    const src = isCold ? cm : channelMetrics(dashChannel);
+    const vals = defs.map(d => src[d.key]);
+    const chLabel = isCold ? "Cold pozivi" : (CHANNELS.find(c => c.key === dashChannel) || {}).label;
     document.querySelectorAll("#chartChannel button").forEach(b => b.classList.toggle("on", b.dataset.ch === dashChannel));
-    $("chartSub").textContent = isMsg ? "Od poslate poruke do prodaje" : "Od prospekta do prodaje";
+    $("chartSub").textContent = (isCold ? "Od prospekta do prodaje" : "Od poruke do prodaje") + " · " + chLabel;
     const top = vals[0], last = vals[vals.length - 1];
-    $("chartTotal").innerHTML = `${fmtNum(top)} <span class="ct-sub">${isMsg ? "poslatih poruka" : "prospekata"}</span> <span class="delta up">${fmtPct(last, top)} do ${isMsg ? "prodaje" : "won"}</span>`;
+    $("chartTotal").innerHTML = `${fmtNum(top)} <span class="ct-sub">${isCold ? "prospekata" : "poslato"}</span> <span class="delta up">${fmtPct(last, top)} do ${isCold ? "won" : "prodaje"}</span>`;
     $("areaWrap").innerHTML = areaChartSVG(defs, vals) + `<div class="chart-tip" id="chartTip"><div class="tt-l"></div><div class="tt-v"></div></div>`;
     bindAreaHover();
   }
 
   function renderChannelPanel(mm, cm, total) {
-    const msg = mm.sent, cold = cm.total, base = Math.max(msg + cold, 1);
-    $("channelPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Kanali outreach-a</div><div class="panel-sub">Odakle dolaze kontakti</div></div></div>
+    const rows = CHANNELS.map(ch => ({ name: ch.icon + " " + ch.short, val: channelMetrics(ch.key).sent }));
+    rows.push({ name: "📞 Pozivi", val: cm.total });
+    const base = Math.max(rows.reduce((s, r) => s + r.val, 0), 1);
+    $("channelPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Kanali outreach-a</div><div class="panel-sub">Koliko po kanalu</div></div></div>
       <div class="chart-total" style="font-size:27px;margin:12px 0 2px;">${fmtNum(total)} <span class="ct-sub">ukupno</span></div>
-      <div class="csplit">${csRow("💬 Poruke", msg, base, "b-msg")}${csRow("📞 Pozivi", cold, base, "b-cold")}</div>`;
+      <div class="csplit">${rows.map((r, i) => csRow(r.name, r.val, base, i === rows.length - 1 ? "b-cold" : "b-msg")).join("")}</div>`;
   }
   function csRow(name, val, base, cls) {
     const p = Math.round(val / base * 100);
@@ -844,13 +869,19 @@
 
   function renderInsights(mm, cm) {
     const ins = [];
-    const rr = pct(mm.replies, mm.sent);
-    if (rr !== null) ins.push({ t: "Reply rate", ic: "↩️", html: `Na poruke odgovara <b>${rr}%</b> ljudi. ${rr < 15 ? "Probaj drugačiji prvi pristup." : "Solidno — zadrži ovaj pristup."}` });
-    const drop = biggestDrop(MSG_METRICS, mm);
-    if (drop) ins.push({ t: "Najveći osip", ic: "⚠️", html: `Najviše gubiš između <b>${drop.from}</b> i <b>${drop.to}</b> (${drop.pct}). Radi na ovom koraku.` });
-    const mc = pct(mm.won, mm.sent), cc = pct(cm.won, cm.total);
-    if (mc !== null || cc !== null) { const better = (mc || 0) >= (cc || 0) ? "Poruke 💬" : "Pozivi 📞"; ins.push({ t: "Bolji kanal", ic: "🏆", html: `Trenutno bolje konvertuje: <b>${better}</b>. Uloži više vremena ovde.` }); }
-    if (!ins.length) ins.push({ t: "Počni", ic: "🚀", html: `Dodaj prospekte i unesi outreach brojeve — uvidi se pojave automatski.` });
+    // najbolji kanal po reply rate-u (samo kanali koji imaju poslato)
+    let bestReply = null;
+    CHANNELS.forEach(ch => { const m = channelMetrics(ch.key); const r = pct(m.replies, m.sent); if (r !== null && (bestReply === null || r > bestReply.r)) bestReply = { r, name: ch.icon + " " + ch.short }; });
+    if (bestReply) ins.push({ t: "Najbolji reply rate", ic: "↩️", html: `<b>${bestReply.name}</b> ima najbolji odziv: <b>${bestReply.r}%</b>. Ovde uloži više.` });
+    // najbolji kanal po prodaji
+    let bestClose = null;
+    CHANNELS.forEach(ch => { const m = channelMetrics(ch.key); const r = pct(m.won, m.sent); if (r !== null && (bestClose === null || r > bestClose.r)) bestClose = { r, name: ch.icon + " " + ch.short }; });
+    const cc = pct(cm.won, cm.total); if (cc !== null && (bestClose === null || cc > bestClose.r)) bestClose = { r: cc, name: "📞 Pozivi" };
+    if (bestClose && bestClose.r > 0) ins.push({ t: "Najbolji za prodaju", ic: "🏆", html: `Najviše prodaja donosi <b>${bestClose.name}</b> (${bestClose.r}% close).` });
+    // najveći osip u aktivnom kanalu (gmail default)
+    const drop = biggestDrop(MSG_METRICS, channelMetrics("gmail"));
+    if (drop) ins.push({ t: "Najveći osip (Gmail)", ic: "⚠️", html: `Najviše gubiš između <b>${drop.from}</b> i <b>${drop.to}</b> (${drop.pct}). Radi na ovom koraku.` });
+    if (!ins.length) ins.push({ t: "Počni", ic: "🚀", html: `Unesi outreach brojeve po kanalu (Instagram, Facebook, Gmail) — uvidi se pojave automatski.` });
     $("insightsPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Ključni uvidi</div><div class="panel-sub">Automatski iz tvojih brojeva</div></div></div>
       <div class="insights">${ins.map(i => `<div class="ins"><div class="ins-ic">${i.ic}</div><div class="ins-b"><div class="ins-t">${esc(i.t)}</div>${i.html}</div></div>`).join("")}</div>`;
   }
@@ -1021,7 +1052,7 @@
     const reader = new FileReader();
     reader.onload = () => { try {
       const parsed = JSON.parse(reader.result), d = parsed && parsed.data ? parsed.data : parsed;
-      if (!d || (!Array.isArray(d.leads) && !Array.isArray(d.prospects) && !d.messageMetrics)) throw new Error("format");
+      if (!d || (!Array.isArray(d.leads) && !Array.isArray(d.prospects) && !d.channels && !d.messageMetrics)) throw new Error("format");
       askConfirm("Uvezi podatke iz kopije? Ovo će zameniti trenutne podatke.", () => { state = normalize(d); save(); applySettingsToUI(); refresh(); toast("Podaci uvezeni."); });
     } catch (e) { toast("Neispravan JSON fajl."); } };
     reader.readAsText(file);
@@ -1070,9 +1101,10 @@
   // metrics edit
   $("editMetricsBtn").addEventListener("click", () => { editingMetrics = true; renderMessage(); });
   $("saveMetricsBtn").addEventListener("click", () => {
-    document.querySelectorAll("#msgKpis .kpi-input").forEach(inp => { state.messageMetrics[inp.dataset.mkey] = num(inp.value); });
-    editingMetrics = false; save(); renderMessage(); toast("Metrike sačuvane.");
+    document.querySelectorAll("#msgKpis .kpi-input").forEach(inp => { state.channels[msgChannel][inp.dataset.mkey] = num(inp.value); });
+    editingMetrics = false; save(); renderMessage(); toast("Metrike sačuvane (" + (CHANNELS.find(c => c.key === msgChannel) || {}).short + ").");
   });
+  $("chanTabs").addEventListener("click", (e) => { const t = e.target.closest("[data-chan]"); if (!t) return; msgChannel = t.dataset.chan; editingMetrics = false; renderMessage(); });
   document.querySelectorAll("#metricMode button").forEach(b => b.addEventListener("click", () => { state.settings.metricMode = b.dataset.mode; editingMetrics = false; save(); renderMessage(); }));
   document.querySelectorAll("#chartChannel button").forEach(b => b.addEventListener("click", () => { dashChannel = b.dataset.ch; renderDash(); }));
   // Enter commits metric edit
