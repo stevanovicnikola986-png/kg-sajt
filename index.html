@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Outreach CRM</title>
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#0a0c10" />
+<meta name="theme-color" content="#0b0d0c" />
 <link rel="icon" type="image/png" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -15,32 +15,34 @@
 <style>
   /* ================= THEME ================= */
   :root {
-    --bg: #0a0c10;
-    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(99,102,241,.10), transparent 60%),
-               radial-gradient(900px 480px at -8% 108%, rgba(34,197,94,.05), transparent 55%);
-    --surface: #12161d; --surface-2: #171c25; --surface-3: #1d2430;
-    --border: #232b38; --border-soft: #1b222e;
-    --text: #eef1f6; --text-soft: #9aa4b2; --text-faint: #626d7d;
-    --accent: #6d8bff; --accent-2: #8b5cf6; --accent-soft: rgba(109,139,255,.14);
+    --bg: #0b0d0c;
+    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(183,242,74,.07), transparent 60%),
+               radial-gradient(900px 480px at -8% 108%, rgba(126,217,87,.04), transparent 55%);
+    --surface: #14171a; --surface-2: #191d21; --surface-3: #20252b;
+    --border: #262d33; --border-soft: #1d2329;
+    --text: #eef2ee; --text-soft: #9aa5a0; --text-faint: #64706a;
+    --accent: #b7f24a; --accent-2: #7ed957; --accent-soft: rgba(183,242,74,.13); --accent-ink: #12220a;
+    --chart: #b7f24a; --chart-2: #7ed957; --grid: rgba(255,255,255,.055);
     --good: #34d399; --good-soft: rgba(52,211,153,.15);
     --warn: #fbbf24; --warn-soft: rgba(251,191,36,.15);
     --bad: #f87171;  --bad-soft: rgba(248,113,113,.15);
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.30);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.34);
     --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-    --radius: 16px; --radius-sm: 11px;
+    --radius: 18px; --radius-sm: 12px;
   }
   :root[data-theme="light"] {
-    --bg: #f4f6fb;
-    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(99,102,241,.09), transparent 60%),
-               radial-gradient(900px 480px at -8% 108%, rgba(34,197,94,.06), transparent 55%);
-    --surface: #ffffff; --surface-2: #f6f8fc; --surface-3: #eef1f7;
-    --border: #e3e8f0; --border-soft: #edf0f6;
-    --text: #131720; --text-soft: #5a6474; --text-faint: #97a0ae;
-    --accent: #4f6bf0; --accent-2: #7c3aed; --accent-soft: rgba(79,107,240,.10);
+    --bg: #f3f6f2;
+    --bg-grad: radial-gradient(1100px 560px at 100% -10%, rgba(126,217,87,.10), transparent 60%),
+               radial-gradient(900px 480px at -8% 108%, rgba(52,211,153,.06), transparent 55%);
+    --surface: #ffffff; --surface-2: #f4f8f2; --surface-3: #eaf0e8;
+    --border: #e2e8de; --border-soft: #edf1ea;
+    --text: #131a14; --text-soft: #56635a; --text-faint: #93a096;
+    --accent: #4faa2f; --accent-2: #2f9e6a; --accent-soft: rgba(79,170,47,.12); --accent-ink: #ffffff;
+    --chart: #4faa2f; --chart-2: #2f9e6a; --grid: rgba(0,0,0,.06);
     --good: #10b981; --good-soft: rgba(16,185,129,.12);
     --warn: #d97706; --warn-soft: rgba(217,119,6,.12);
     --bad: #dc2626; --bad-soft: rgba(220,38,38,.10);
-    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 10px 30px rgba(16,24,40,.08);
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 12px 34px rgba(16,24,40,.09);
     --shadow-sm: 0 1px 2px rgba(16,24,40,.05);
   }
   * { box-sizing: border-box; }
@@ -58,7 +60,7 @@
   .brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 18px; }
   .brand .logo { width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
     background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center;
-    color: #fff; font-size: 19px; box-shadow: 0 6px 18px rgba(109,139,255,.35); }
+    color: var(--accent-ink); font-size: 19px; box-shadow: 0 6px 18px rgba(126,217,87,.32); }
   .brand .bt { font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
   .brand .bs { font-size: 11px; color: var(--text-faint); font-weight: 600; }
   .nav-group { font-size: 10.5px; font-weight: 800; color: var(--text-faint); text-transform: uppercase; letter-spacing: .8px; padding: 12px 12px 6px; }
@@ -85,7 +87,7 @@
   .search-box input:focus { outline: none; border-color: var(--accent); }
   .search-box .si { position: absolute; left: 11px; font-size: 13px; opacity: .6; pointer-events: none; }
   .profile { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
-    background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+    background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: var(--accent-ink); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
   .hamb { display: none; }
   .main { padding: 22px clamp(16px,3vw,28px) 90px; max-width: 1280px; width: 100%; }
 
@@ -95,7 +97,7 @@
     display: inline-flex; align-items: center; gap: 7px; transition: background .13s, border-color .13s, transform .06s; white-space: nowrap; }
   .btn:hover { background: var(--surface-3); }
   .btn:active { transform: translateY(1px); }
-  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(109,139,255,.3); }
+  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: var(--accent-ink); box-shadow: 0 6px 16px rgba(126,217,87,.26); font-weight: 700; }
   .btn.primary:hover { filter: brightness(1.07); }
   .btn.ghost { background: transparent; border-color: transparent; color: var(--text-soft); }
   .btn.ghost:hover { background: var(--surface-2); color: var(--text); }
@@ -192,6 +194,76 @@
   .sum-val { font-size: 27px; font-weight: 800; letter-spacing: -1px; margin-top: 8px; font-variant-numeric: tabular-nums; }
   .sum-note { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
 
+  /* ================= DASHBOARD (analytics) ================= */
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 17px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+  .stat.accent { background: linear-gradient(150deg, color-mix(in srgb, var(--accent) 16%, var(--surface)), var(--surface) 70%); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
+  .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .stat-label { font-size: 12px; color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .stat-ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 15px; background: var(--surface-3); }
+  .stat.accent .stat-ic { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  .stat-val { font-size: 30px; font-weight: 800; letter-spacing: -1.2px; margin-top: 12px; font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat-sub { display: flex; align-items: center; gap: 7px; margin-top: 9px; font-size: 11.5px; color: var(--text-faint); }
+  .delta { font-weight: 700; font-size: 11px; padding: 2px 7px; border-radius: 20px; }
+  .delta.up { color: var(--accent); background: var(--accent-soft); }
+  .delta.flat { color: var(--text-soft); background: var(--surface-3); }
+  .spark { position: absolute; right: 14px; bottom: 14px; width: 74px; height: 30px; opacity: .9; }
+
+  .analytics-grid { display: grid; grid-template-columns: 1.9fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .side-col { display: flex; flex-direction: column; gap: 16px; }
+  .bottom-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
+  .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 4px; flex-wrap: wrap; }
+  .chart-total { font-size: 34px; font-weight: 800; letter-spacing: -1.5px; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
+  .chart-total .ct-sub { font-size: 12.5px; font-weight: 600; color: var(--text-soft); letter-spacing: 0; margin-left: 8px; }
+  .chart-total .delta { vertical-align: middle; margin-left: 6px; }
+  .area-wrap { position: relative; margin-top: 10px; }
+  .area-wrap svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart-tip { position: absolute; z-index: 5; transform: translate(-50%, -118%); background: var(--surface-3); border: 1px solid var(--border); border-radius: 10px; padding: 7px 11px; box-shadow: var(--shadow); pointer-events: none; white-space: nowrap; opacity: 0; transition: opacity .12s; }
+  .chart-tip.show { opacity: 1; }
+  .chart-tip .tt-l { font-size: 11px; color: var(--text-soft); }
+  .chart-tip .tt-v { font-size: 15px; font-weight: 800; }
+  .area-dot { cursor: pointer; }
+
+  /* channel split */
+  .csplit { display: flex; flex-direction: column; gap: 15px; margin-top: 14px; }
+  .csplit-row .cs-top { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 7px; }
+  .cs-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .cs-val { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .cs-val small { color: var(--text-faint); font-weight: 600; margin-left: 5px; }
+  .bar { height: 9px; border-radius: 10px; background: var(--surface-3); overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 10px; }
+  .bar.b-msg > span { background: linear-gradient(90deg, var(--chart-2), var(--chart)); }
+  .bar.b-cold > span { background: linear-gradient(90deg, #5aa0f0, #7ed957); }
+
+  /* top locations */
+  .toplist { display: flex; flex-direction: column; gap: 13px; margin-top: 14px; }
+  .toprow { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; }
+  .toprow .tl-name { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .toprow .tl-name .pin { width: 22px; height: 22px; border-radius: 6px; background: var(--surface-3); display: grid; place-items: center; font-size: 11px; flex-shrink: 0; }
+  .toprow .tl-val { font-size: 12.5px; font-weight: 700; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+  .toprow .bar { grid-column: 1 / -1; }
+  .toprow .bar > span { background: linear-gradient(90deg, color-mix(in srgb, var(--chart) 55%, var(--chart-2)), var(--chart)); }
+
+  /* conversion donut */
+  .conv-panel-body { display: flex; align-items: center; gap: 24px; margin-top: 12px; flex-wrap: wrap; }
+  .donut { position: relative; width: 150px; height: 150px; flex-shrink: 0; }
+  .donut .d-center { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+  .donut .d-pct { font-size: 30px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+  .donut .d-lbl { font-size: 10.5px; color: var(--text-soft); margin-top: 4px; letter-spacing: .3px; }
+  .conv-bars { flex: 1; min-width: 190px; display: flex; flex-direction: column; gap: 13px; }
+  .cbrow .cb-top { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 6px; }
+  .cbrow .cb-name { color: var(--text-soft); font-weight: 500; }
+  .cbrow .cb-val { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .cbrow .bar > span { background: linear-gradient(90deg, var(--chart-2), var(--chart)); }
+
+  /* insights */
+  .insights { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+  .ins { display: flex; gap: 12px; align-items: flex-start; padding: 12px 13px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface-2); }
+  .ins .ins-ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-size: 15px; flex-shrink: 0; background: var(--accent-soft); }
+  .ins .ins-b { font-size: 13px; line-height: 1.45; }
+  .ins .ins-b b { color: var(--accent); font-weight: 700; }
+  .ins .ins-t { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; margin-bottom: 2px; }
+
   /* ================= MODAL ================= */
   .overlay { position: fixed; inset: 0; background: rgba(4,7,12,.62); z-index: 60; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
   .overlay.show { display: flex; }
@@ -232,10 +304,15 @@
     .scrim.show { display: block; }
     .hamb { display: inline-flex; }
     .two-col { grid-template-columns: 1fr; }
+    .analytics-grid, .bottom-grid { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
     .header h1 { font-size: 17px; } .search-box input { width: 150px; } .header .hide-sm { display: none; }
   }
   @media (max-width: 480px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .kpi-num { font-size: 25px; }
+    .stat-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-val { font-size: 25px; } .spark { display: none; }
+    .conv-panel-body { justify-content: center; }
     .checks-grid { grid-template-columns: 1fr; } .field-row { flex-direction: column; gap: 0; } .search-box { display: none; }
   }
 </style>
@@ -266,20 +343,24 @@
     <main class="main">
       <!-- DASHBOARD -->
       <section class="view" id="view-dash">
-        <div class="section-label">Kombinovani pregled <span class="sl-line"></span></div>
-        <div class="summary-grid" id="dashSummary"></div>
-        <div class="section-label">💬 Message Outreach <span class="sl-line"></span></div>
-        <div class="kpi-grid" id="dashMsgKpis"></div>
-        <div style="height:13px"></div>
-        <div class="conv-grid" id="dashMsgConv"></div>
-        <div class="section-label">📞 Cold Calling <span class="sl-line"></span></div>
-        <div class="kpi-grid" id="dashColdKpis"></div>
-        <div style="height:13px"></div>
-        <div class="conv-grid" id="dashColdConv"></div>
-        <div class="section-label">Levci (funnel) <span class="sl-line"></span></div>
-        <div class="two-col">
-          <div class="panel"><div class="panel-title">💬 Message funnel</div><div class="panel-sub">Od poruke do prodaje</div><div class="funnel" id="dashMsgFunnel"></div></div>
-          <div class="panel"><div class="panel-title">📞 Cold calling funnel</div><div class="panel-sub">Od prospekta do prodaje</div><div class="funnel" id="dashColdFunnel"></div></div>
+        <div class="stat-row" id="statRow"></div>
+        <div class="analytics-grid">
+          <div class="panel chart-panel">
+            <div class="panel-head">
+              <div><div class="panel-title">Levak konverzije</div><div class="panel-sub" id="chartSub">Kako se leadovi kreću kroz faze</div></div>
+              <div class="seg" id="chartChannel"><button data-ch="message" class="on">💬 Poruke</button><button data-ch="cold">📞 Pozivi</button></div>
+            </div>
+            <div class="chart-total" id="chartTotal"></div>
+            <div class="area-wrap" id="areaWrap"></div>
+          </div>
+          <div class="side-col">
+            <div class="panel" id="channelPanel"></div>
+            <div class="panel" id="topLocPanel"></div>
+          </div>
+        </div>
+        <div class="bottom-grid">
+          <div class="panel" id="convPanel"></div>
+          <div class="panel" id="insightsPanel"></div>
         </div>
       </section>
 
@@ -674,6 +755,10 @@
   }
 
   // ---------- DASHBOARD ----------
+  const SHORT = { sent:"Poruke", replies:"Odgovori", accepted:"Sajt", positive:"Utisci", booked:"Zakazani", held:"Održani", won:"Prodaje", total:"Prospekti", contacted:"Kontakt", interested:"Interes", offers:"Ponude" };
+  const short = (k) => SHORT[k] || k;
+  let dashChannel = "message";
+
   function renderDash() {
     const mm = messageMetrics(), cm = coldMetrics();
     let revenue = 0, wonDeals = 0;
@@ -681,26 +766,151 @@
     for (const p of state.prospects) if (p.status === "won") { wonDeals++; revenue += p.deal || 0; }
     const totalLeads = state.leads.length + state.prospects.length;
     const totalOutreach = mm.sent + cm.total;
-    const positiveLeads = mm.positive + cm.interested;
-    const totalCalls = mm.held + cm.contacted;
     const totalSales = mm.won + cm.won;
     const avgDeal = wonDeals > 0 ? revenue / wonDeals : 0;
-    $("dashSummary").innerHTML = [
-      sumCard("hero", "🧲 Ukupno leadova", fmtNum(totalLeads), `${fmtNum(state.leads.length)} msg · ${fmtNum(state.prospects.length)} prospekata`),
-      sumCard("", "📣 Outreach pokušaji", fmtNum(totalOutreach), "poruke + prospekti"),
-      sumCard("", "🔥 Pozitivni leadovi", fmtNum(positiveLeads), "utisci + zainteresovani"),
-      sumCard("", "📞 Pozivi", fmtNum(totalCalls), "održani + kontaktirani"),
-      sumCard("", "📤 Poslate ponude", fmtNum(cm.offers), ""),
-      sumCard("", "💰 Prodaje", fmtNum(totalSales), ""),
-      sumCard("", "📈 Overall Conversion", fmtPct(totalSales, totalOutreach), "prodaje / outreach"),
-      sumCard("good", "💵 Total Revenue", fmtMoney(revenue), `Avg deal: ${fmtMoney(avgDeal)}`),
+
+    const msgVals = MSG_METRICS.map(m => mm[m.key]);
+    const coldVals = COLD_FUNNEL.map(m => cm[m.key]);
+    $("statRow").innerHTML = [
+      statTile("accent", "🧲", "Ukupno leadova", fmtNum(totalLeads), `${fmtNum(state.leads.length)} poruke · ${fmtNum(state.prospects.length)} pozivi`, msgVals),
+      statTile("", "📣", "Outreach pokušaji", fmtNum(totalOutreach), "poslate poruke + prospekti", msgVals),
+      statTile("", "💰", "Prodaje / Won", fmtNum(totalSales), fmtPct(totalSales, totalOutreach) + " ukupna konverzija", coldVals),
+      statTile("", "💵", "Procenjeni prihod", fmtMoney(revenue), "prosečno " + fmtMoney(avgDeal) + " / posao", null),
     ].join("");
-    $("dashMsgKpis").innerHTML = MSG_METRICS.map(m => kpiCard(m, mm[m.key], false)).join("");
-    $("dashMsgConv").innerHTML = MSG_CONV.map(c => convCard(c, mm)).join("");
-    $("dashColdKpis").innerHTML = COLD_METRICS.map(m => kpiCard(m, cm[m.key], false)).join("");
-    $("dashColdConv").innerHTML = COLD_CONV.map(c => convCard(c, cm)).join("");
-    $("dashMsgFunnel").innerHTML = funnelRows(MSG_METRICS, mm);
-    $("dashColdFunnel").innerHTML = funnelRows(COLD_FUNNEL, cm);
+
+    renderAreaPanel(mm, cm);
+    renderChannelPanel(mm, cm, totalOutreach);
+    renderTopLocations();
+    renderConvPanel(mm, cm);
+    renderInsights(mm, cm);
+  }
+
+  function statTile(cls, icon, label, val, sub, sparkVals) {
+    const spark = sparkVals ? `<div class="spark">${sparklineSVG(sparkVals)}</div>` : "";
+    return `<div class="stat ${cls}"><div class="stat-top"><div class="stat-label"><span class="stat-ic">${icon}</span>${esc(label)}</div></div>
+      <div class="stat-val">${val}</div><div class="stat-sub">${esc(sub)}</div>${spark}</div>`;
+  }
+
+  function renderAreaPanel(mm, cm) {
+    const isMsg = dashChannel === "message";
+    const defs = isMsg ? MSG_METRICS : COLD_FUNNEL;
+    const vals = defs.map(d => (isMsg ? mm : cm)[d.key]);
+    document.querySelectorAll("#chartChannel button").forEach(b => b.classList.toggle("on", b.dataset.ch === dashChannel));
+    $("chartSub").textContent = isMsg ? "Od poslate poruke do prodaje" : "Od prospekta do prodaje";
+    const top = vals[0], last = vals[vals.length - 1];
+    $("chartTotal").innerHTML = `${fmtNum(top)} <span class="ct-sub">${isMsg ? "poslatih poruka" : "prospekata"}</span> <span class="delta up">${fmtPct(last, top)} do ${isMsg ? "prodaje" : "won"}</span>`;
+    $("areaWrap").innerHTML = areaChartSVG(defs, vals) + `<div class="chart-tip" id="chartTip"><div class="tt-l"></div><div class="tt-v"></div></div>`;
+    bindAreaHover();
+  }
+
+  function renderChannelPanel(mm, cm, total) {
+    const msg = mm.sent, cold = cm.total, base = Math.max(msg + cold, 1);
+    $("channelPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Kanali outreach-a</div><div class="panel-sub">Odakle dolaze kontakti</div></div></div>
+      <div class="chart-total" style="font-size:27px;margin:12px 0 2px;">${fmtNum(total)} <span class="ct-sub">ukupno</span></div>
+      <div class="csplit">${csRow("💬 Poruke", msg, base, "b-msg")}${csRow("📞 Pozivi", cold, base, "b-cold")}</div>`;
+  }
+  function csRow(name, val, base, cls) {
+    const p = Math.round(val / base * 100);
+    return `<div class="csplit-row"><div class="cs-top"><span class="cs-name">${name}</span><span class="cs-val">${fmtNum(val)}<small>${p}%</small></span></div><div class="bar ${cls}"><span style="width:${p}%"></span></div></div>`;
+  }
+
+  function renderTopLocations() {
+    const map = {};
+    for (const p of state.prospects) { const loc = (p.location || "").split(",")[0].trim() || "Nepoznato"; map[loc] = (map[loc] || 0) + 1; }
+    const arr = Object.keys(map).map(k => ({ k, n: map[k] })).sort((a, b) => b.n - a.n).slice(0, 5);
+    const max = arr.length ? arr[0].n : 1;
+    const body = arr.length
+      ? `<div class="toplist">` + arr.map(x => `<div class="toprow"><div class="tl-name"><span class="pin">📍</span>${esc(x.k)}</div><div class="tl-val">${x.n}</div><div class="bar"><span style="width:${Math.round(x.n / max * 100)}%"></span></div></div>`).join("") + `</div>`
+      : `<div class="kcol-empty" style="margin-top:14px">Dodaj prospekte da vidiš top lokacije.</div>`;
+    $("topLocPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Top lokacije</div><div class="panel-sub">Gde je najviše prospekata</div></div></div>${body}`;
+  }
+
+  function renderConvPanel(mm, cm) {
+    const totalSales = mm.won + cm.won, totalOut = mm.sent + cm.total;
+    const overall = pct(totalSales, totalOut) || 0;
+    const bars = [
+      { name: "Reply rate (poruke)", a: mm.replies, b: mm.sent },
+      { name: "Prihvatili sajt", a: mm.accepted, b: mm.replies },
+      { name: "Close rate (poruke)", a: mm.won, b: mm.held },
+      { name: "Contact rate (pozivi)", a: cm.contacted, b: cm.total },
+    ];
+    $("convPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Konverzija</div><div class="panel-sub">Ukupno i po fazama</div></div></div>
+      <div class="conv-panel-body">${donutSVG(overall)}<div class="conv-bars">${bars.map(cbRow).join("")}</div></div>`;
+  }
+  function cbRow(x) {
+    const p = pct(x.a, x.b), w = p === null ? 0 : Math.min(p, 100);
+    return `<div class="cbrow"><div class="cb-top"><span class="cb-name">${esc(x.name)}</span><span class="cb-val">${fmtPct(x.a, x.b)}</span></div><div class="bar"><span style="width:${w}%"></span></div></div>`;
+  }
+
+  function renderInsights(mm, cm) {
+    const ins = [];
+    const rr = pct(mm.replies, mm.sent);
+    if (rr !== null) ins.push({ t: "Reply rate", ic: "↩️", html: `Na poruke odgovara <b>${rr}%</b> ljudi. ${rr < 15 ? "Probaj drugačiji prvi pristup." : "Solidno — zadrži ovaj pristup."}` });
+    const drop = biggestDrop(MSG_METRICS, mm);
+    if (drop) ins.push({ t: "Najveći osip", ic: "⚠️", html: `Najviše gubiš između <b>${drop.from}</b> i <b>${drop.to}</b> (${drop.pct}). Radi na ovom koraku.` });
+    const mc = pct(mm.won, mm.sent), cc = pct(cm.won, cm.total);
+    if (mc !== null || cc !== null) { const better = (mc || 0) >= (cc || 0) ? "Poruke 💬" : "Pozivi 📞"; ins.push({ t: "Bolji kanal", ic: "🏆", html: `Trenutno bolje konvertuje: <b>${better}</b>. Uloži više vremena ovde.` }); }
+    if (!ins.length) ins.push({ t: "Počni", ic: "🚀", html: `Dodaj prospekte i unesi outreach brojeve — uvidi se pojave automatski.` });
+    $("insightsPanel").innerHTML = `<div class="panel-head"><div><div class="panel-title">Ključni uvidi</div><div class="panel-sub">Automatski iz tvojih brojeva</div></div></div>
+      <div class="insights">${ins.map(i => `<div class="ins"><div class="ins-ic">${i.ic}</div><div class="ins-b"><div class="ins-t">${esc(i.t)}</div>${i.html}</div></div>`).join("")}</div>`;
+  }
+  function biggestDrop(defs, vals) {
+    let worst = null;
+    for (let i = 1; i < defs.length; i++) { const a = vals[defs[i].key], b = vals[defs[i - 1].key]; if (b > 0) { const keep = a / b; if (worst === null || keep < worst.keep) worst = { keep, from: short(defs[i - 1].key), to: short(defs[i].key), pct: Math.round((1 - keep) * 100) + "% osip" }; } }
+    return worst;
+  }
+
+  // ---------- SVG chart builders ----------
+  function smoothPath(pts) {
+    if (pts.length < 2) return pts.length ? `M ${pts[0][0]} ${pts[0][1]}` : "";
+    let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d;
+  }
+  function areaChartSVG(defs, vals) {
+    const W = 720, H = 250, PADL = 16, PADR = 16, PADT = 20, PADB = 36;
+    const n = defs.length, max = Math.max.apply(null, vals.concat(1));
+    const x = i => PADL + i * ((W - PADL - PADR) / (n - 1));
+    const y = v => (H - PADB) - (v / max) * (H - PADB - PADT);
+    const pts = vals.map((v, i) => [x(i), y(v)]);
+    const line = smoothPath(pts);
+    const area = line + ` L ${x(n - 1).toFixed(1)} ${H - PADB} L ${x(0).toFixed(1)} ${H - PADB} Z`;
+    let grid = "";
+    for (let g = 0; g <= 3; g++) { const gy = (PADT + g * ((H - PADB - PADT) / 3)).toFixed(1); grid += `<line x1="${PADL}" y1="${gy}" x2="${W - PADR}" y2="${gy}" style="stroke:var(--grid)" stroke-width="1"/>`; }
+    const gid = "ag" + Math.random().toString(36).slice(2, 7);
+    const dots = pts.map((p, i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4.5" style="fill:var(--surface);stroke:var(--chart)" stroke-width="2.5"/><circle class="area-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="17" fill="transparent" data-label="${esc(defs[i].label)}" data-val="${fmtNum(vals[i])}"/>`).join("");
+    const xl = defs.map((d, i) => `<text x="${x(i).toFixed(1)}" y="${H - 12}" text-anchor="middle" style="fill:var(--text-faint);font-size:11px">${esc(short(d.key))}</text>`).join("");
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Levak konverzije">
+      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--chart);stop-opacity:.34"/><stop offset="1" style="stop-color:var(--chart);stop-opacity:0"/></linearGradient></defs>
+      ${grid}<path d="${area}" fill="url(#${gid})"/><path d="${line}" fill="none" style="stroke:var(--chart)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>${dots}${xl}</svg>`;
+  }
+  function sparklineSVG(vals) {
+    const v = vals.slice().reverse(), W = 74, H = 30, max = Math.max.apply(null, v.concat(1));
+    const x = i => i * (W / Math.max(v.length - 1, 1)), y = val => (H - 2) - (val / max) * (H - 7);
+    const pts = v.map((val, i) => [x(i), y(val)]);
+    const line = smoothPath(pts), area = line + ` L ${W} ${H} L 0 ${H} Z`, gid = "sp" + Math.random().toString(36).slice(2, 7), last = pts[pts.length - 1];
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--chart);stop-opacity:.34"/><stop offset="1" style="stop-color:var(--chart);stop-opacity:0"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${line}" fill="none" style="stroke:var(--chart)" stroke-width="1.7"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.4" style="fill:var(--chart)"/></svg>`;
+  }
+  function donutSVG(percent) {
+    const p = Math.max(0, Math.min(percent, 100)), r = 62, c = 2 * Math.PI * r, off = c * (1 - p / 100);
+    return `<div class="donut"><svg viewBox="0 0 150 150" width="150" height="150"><circle cx="75" cy="75" r="${r}" fill="none" style="stroke:var(--surface-3)" stroke-width="14"/><circle cx="75" cy="75" r="${r}" fill="none" style="stroke:var(--chart)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 75 75)"/></svg><div class="d-center"><div><div class="d-pct">${Math.round(p * 10) / 10}%</div><div class="d-lbl">ukupna<br>konverzija</div></div></div></div>`;
+  }
+  function bindAreaHover() {
+    const wrap = $("areaWrap"), tip = $("chartTip"); if (!wrap || !tip) return;
+    wrap.querySelectorAll(".area-dot").forEach(dot => {
+      const show = () => { const dr = dot.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+        tip.querySelector(".tt-l").textContent = dot.getAttribute("data-label");
+        tip.querySelector(".tt-v").textContent = dot.getAttribute("data-val");
+        tip.style.left = (dr.left - wr.left + dr.width / 2) + "px"; tip.style.top = (dr.top - wr.top) + "px"; tip.classList.add("show"); };
+      dot.addEventListener("mouseenter", show);
+      dot.addEventListener("click", show);
+      dot.addEventListener("mouseleave", () => tip.classList.remove("show"));
+    });
   }
 
   // ---------- Router ----------
@@ -864,6 +1074,7 @@
     editingMetrics = false; save(); renderMessage(); toast("Metrike sačuvane.");
   });
   document.querySelectorAll("#metricMode button").forEach(b => b.addEventListener("click", () => { state.settings.metricMode = b.dataset.mode; editingMetrics = false; save(); renderMessage(); }));
+  document.querySelectorAll("#chartChannel button").forEach(b => b.addEventListener("click", () => { dashChannel = b.dataset.ch; renderDash(); }));
   // Enter commits metric edit
   $("msgKpis").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.classList.contains("kpi-input")) { e.preventDefault(); $("saveMetricsBtn").click(); } });
 
