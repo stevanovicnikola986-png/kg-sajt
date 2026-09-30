@@ -264,6 +264,26 @@
   .ins .ins-b b { color: var(--accent); font-weight: 700; }
   .ins .ins-t { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; margin-bottom: 2px; }
 
+  /* follow-up reminders */
+  .fu-badge { font-size: 11.5px; font-weight: 800; padding: 4px 11px; border-radius: 20px; background: var(--bad-soft); color: var(--bad); white-space: nowrap; }
+  .fu-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+  .fu-row { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface-2); cursor: pointer; transition: border-color .12s, background .12s; }
+  .fu-row:hover { border-color: color-mix(in srgb, var(--accent) 34%, var(--border)); background: var(--surface-3); }
+  .fu-row.due { border-left: 3px solid var(--bad); }
+  .fu-row.today { border-left: 3px solid var(--warn); }
+  .fu-row.up { border-left: 3px solid var(--border); }
+  .fu-when { min-width: 62px; font-size: 12px; font-weight: 800; }
+  .fu-when small { display: block; font-weight: 600; color: var(--text-faint); font-size: 10.5px; margin-top: 1px; }
+  .fu-row.due .fu-when { color: var(--bad); } .fu-row.today .fu-when { color: var(--warn); } .fu-row.up .fu-when { color: var(--text-soft); }
+  .fu-main { flex: 1; min-width: 0; }
+  .fu-name { font-weight: 700; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fu-sub { font-size: 11.5px; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fu-go { color: var(--text-faint); font-size: 20px; font-weight: 700; }
+  .fu-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 8px; margin-top: 8px; }
+  .fu-pill.due { background: var(--bad-soft); color: var(--bad); }
+  .fu-pill.today { background: var(--warn-soft); color: var(--warn); }
+  .fu-pill.up { background: var(--surface-3); color: var(--text-soft); }
+
   /* ================= MODAL ================= */
   .overlay { position: fixed; inset: 0; background: rgba(4,7,12,.62); z-index: 60; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
   .overlay.show { display: flex; }
@@ -312,6 +332,7 @@
     .hamb { display: inline-flex; }
     .two-col { grid-template-columns: 1fr; }
     .analytics-grid, .bottom-grid { grid-template-columns: 1fr; }
+    .fu-list { grid-template-columns: 1fr; }
     .stat-row { grid-template-columns: repeat(2, 1fr); }
     .header h1 { font-size: 17px; } .search-box input { width: 150px; } .header .hide-sm { display: none; }
   }
@@ -365,6 +386,7 @@
             <div class="panel" id="topLocPanel"></div>
           </div>
         </div>
+        <div class="panel" id="remindersPanel" style="margin-bottom:16px;"></div>
         <div class="bottom-grid">
           <div class="panel" id="convPanel"></div>
           <div class="panel" id="insightsPanel"></div>
@@ -445,6 +467,10 @@
     <div class="field-row"><div class="field"><label>Google Maps URL</label><input id="p_maps" placeholder="https://maps.google.com/…" /></div><div class="field"><label>Website</label><input id="p_website" placeholder="https://…" /></div></div>
     <div class="field-row"><div class="field"><label>Lokacija</label><input id="p_location" placeholder="Kragujevac, centar" /></div><div class="field"><label>Status</label><select id="p_status"></select></div></div>
     <div class="field" id="p_dealWrap" style="display:none;"><label>Vrednost posla (Won)</label><input type="number" id="p_deal" min="0" step="10" placeholder="npr. 500" /></div>
+    <div class="field-row">
+      <div class="field"><label>Sledeći follow-up (datum)</label><input type="date" id="p_followup" /></div>
+      <div class="field"><label>Beleška za follow-up</label><input id="p_followNote" placeholder="npr. pozvati prepodne" /></div>
+    </div>
     <div class="field"><label>Beleške</label><textarea id="p_notes" placeholder="Kratka beleška…"></textarea></div>
   </div>
   <div class="modal-foot"><button class="btn danger" id="deleteProspectBtn" style="margin-right:auto;display:none;">Obriši</button><button class="btn" data-close-prospect>Otkaži</button><button class="btn primary" id="saveProspectBtn">Sačuvaj</button></div>
@@ -581,13 +607,13 @@
     return { id: l.id || uid(), name: l.name || "", company: l.company || "", platform: l.platform || "Instagram",
       contact: l.contact || "", date: l.date || "", sent: !!l.sent, replied: !!l.replied, site: !!l.site,
       positive: !!l.positive, booked: !!l.booked, held: !!l.held, sale: !!l.sale, notes: l.notes || "",
-      status: l.status || "nije", deal: numF(l.deal), demo: !!l.demo, createdAt: l.createdAt || Date.now() };
+      status: l.status || "nije", deal: numF(l.deal), followup: l.followup || "", demo: !!l.demo, createdAt: l.createdAt || Date.now() };
   }
   function normProspect(p) {
     return { id: p.id || uid(), company: p.company || "", person: p.person || "", phone: p.phone || "",
       email: p.email || "", maps: p.maps || "", website: p.website || "", location: p.location || "",
       date: p.date || new Date().toISOString().slice(0, 10), notes: p.notes || "", status: p.status || "prospekt",
-      deal: numF(p.deal), demo: !!p.demo, createdAt: p.createdAt || Date.now() };
+      deal: numF(p.deal), followup: p.followup || "", followNote: p.followNote || "", demo: !!p.demo, createdAt: p.createdAt || Date.now() };
   }
   function normalize(d) {
     const s = defaultState(); if (!d) return s;
@@ -644,6 +670,14 @@
   }
   const currency = () => state.settings.currency || "€";
   function fmtMoney(n) { const c = currency(); return c === "RSD" ? fmtNum(Math.round(n)) + " RSD" : c + fmtNum(Math.round(n)); }
+  // ---------- Follow-up ----------
+  function fuState(dstr) { if (!dstr) return null; const t = new Date().toISOString().slice(0, 10); if (dstr < t) return "due"; if (dstr === t) return "today"; return "up"; }
+  function fmtDateShort(dstr) { if (!dstr) return ""; const d = new Date(dstr); if (isNaN(d)) return dstr; return d.toLocaleDateString("sr-RS", { day: "2-digit", month: "2-digit", year: "numeric" }); }
+  function followupPill(dstr, note) {
+    const st = fuState(dstr); if (!st) return "";
+    const label = st === "due" ? "⏰ Dospeo" : st === "today" ? "⏰ Danas" : "⏰ Follow-up";
+    return `<div class="fu-pill ${st}">${label}: ${esc(fmtDateShort(dstr))}${note ? " · " + esc(note) : ""}</div>`;
+  }
 
   // ---------- Card builders ----------
   function kpiCard(m, val, editable) {
@@ -736,9 +770,10 @@
   }
   function kanbanCard(p, statusKey) {
     const quick = [ { s: "kontaktiran", i: "☎", t: "Kontaktiran" }, { s: "zainteresovan", i: "🔥", t: "Zainteresovan" }, { s: "ponuda", i: "📤", t: "Poslata ponuda" }, { s: "won", i: "✅", t: "Won" }, { s: "odbijen", i: "❌", t: "Odbijen" } ].filter(a => a.s !== statusKey);
+    const fu = followupPill(p.followup, p.followNote);
     return `<div class="kcard" draggable="true" data-pid="${p.id}"><div class="kcard-title"><span>${esc(p.company)}</span><button class="icon-btn" data-editprospect="${p.id}" title="Izmeni">✎</button></div>
       <div class="kcard-meta">${p.phone ? `<span>📞 ${esc(p.phone)}</span>` : ""}${p.location ? `<span>📍 ${esc(p.location)}</span>` : ""}<span class="muted">📅 ${esc(p.date)}</span></div>
-      <div class="kcard-actions">${quick.map(a => `<button class="qa" data-setstatus="${p.id}" data-status="${a.s}" title="${a.t}">${a.i}</button>`).join("")}</div></div>`;
+      ${fu}<div class="kcard-actions">${quick.map(a => `<button class="qa" data-setstatus="${p.id}" data-status="${a.s}" title="${a.t}">${a.i}</button>`).join("")}</div></div>`;
   }
   let dragId = null;
   function attachDnD() {
@@ -768,7 +803,7 @@
     if (!state.prospects.length) { $("prospectsTableWrap").innerHTML = `<div class="empty"><div class="big">🏢</div><div>Još nema prospekata.</div><div style="margin-top:10px"><button class="btn primary" data-openprospect="new">+ Dodaj prvi prospekt</button></div></div>`; return; }
     if (!list.length) { $("prospectsTableWrap").innerHTML = `<div class="empty"><div class="big">🔍</div><div>Nema rezultata.</div></div>`; return; }
     const rows = list.map(p => { const s = prospStatus(p.status); return `<tr>
-      <td class="lead-name">${esc(p.company)}${p.demo ? ' <span class="muted" style="font-size:10px">demo</span>' : ''}${p.person ? `<div class="muted" style="font-weight:400;font-size:11.5px">${esc(p.person)}</div>` : ""}</td>
+      <td class="lead-name">${esc(p.company)}${p.demo ? ' <span class="muted" style="font-size:10px">demo</span>' : ''}${p.person ? `<div class="muted" style="font-weight:400;font-size:11.5px">${esc(p.person)}</div>` : ""}${followupPill(p.followup, p.followNote)}</td>
       <td>${p.phone ? esc(p.phone) : '<span class="muted">—</span>'}</td><td>${esc(p.location) || '<span class="muted">—</span>'}</td>
       <td><span class="badge" style="--b-c:${s.c};--b-soft:${s.bg}">${esc(s.label)}</span></td><td>${esc(p.date)}</td>
       <td><div class="row-actions">${p.phone ? `<button class="icon-btn" data-copyphone="${esc(p.phone)}" title="Kopiraj broj">📋</button>` : ""}${p.maps ? `<button class="icon-btn" data-openurl="${esc(p.maps)}" title="Google Maps">🗺</button>` : ""}${p.website ? `<button class="icon-btn" data-openurl="${esc(p.website)}" title="Website">🌐</button>` : ""}<button class="icon-btn" data-editprospect="${p.id}" title="Izmeni">✎</button><button class="icon-btn del" data-delprospect="${p.id}" title="Obriši">🗑</button></div></td></tr>`; }).join("");
@@ -802,8 +837,32 @@
     renderAreaPanel(mm, cm);
     renderChannelPanel(mm, cm, totalOutreach);
     renderTopLocations();
+    renderReminders();
     renderConvPanel(mm, cm);
     renderInsights(mm, cm);
+  }
+
+  function collectReminders() {
+    const items = [];
+    state.prospects.forEach(p => { const st = fuState(p.followup); if (st) items.push({ kind: "prospect", id: p.id, name: p.company, sub: prospStatus(p.status).label, sc: prospStatus(p.status).c, date: p.followup, note: p.followNote || "", st }); });
+    state.leads.forEach(l => { const st = fuState(l.followup); if (st) items.push({ kind: "lead", id: l.id, name: l.company || l.name || "Lead", sub: leadStatus(l.status).label, sc: leadStatus(l.status).c, date: l.followup, note: "", st }); });
+    const ord = { due: 0, today: 1, up: 2 };
+    items.sort((a, b) => (ord[a.st] - ord[b.st]) || a.date.localeCompare(b.date));
+    return items;
+  }
+  function renderReminders() {
+    const items = collectReminders();
+    const dueN = items.filter(i => i.st === "due" || i.st === "today").length;
+    const head = `<div class="panel-head"><div><div class="panel-title">⏰ Follow-up podsetnici</div><div class="panel-sub">Koga treba kontaktirati</div></div>${dueN ? `<span class="fu-badge">${dueN} za danas/dospelo</span>` : ""}</div>`;
+    if (!items.length) { $("remindersPanel").innerHTML = head + `<div class="kcol-empty" style="margin-top:14px">Nema zakazanih follow-up-ova. Otvori prospekt i postavi datum.</div>`; return; }
+    const rows = items.slice(0, 8).map(i => {
+      const lab = i.st === "due" ? "Dospeo" : i.st === "today" ? "Danas" : fmtDateShort(i.date);
+      return `<div class="fu-row ${i.st}" data-openrem="${i.kind}:${i.id}">
+        <div class="fu-when">${lab}${i.st !== "up" ? `<small>${esc(fmtDateShort(i.date))}</small>` : ""}</div>
+        <div class="fu-main"><div class="fu-name">${esc(i.name)}</div><div class="fu-sub">${i.kind === "prospect" ? "📞" : "💬"} <span style="color:${i.sc}">${esc(i.sub)}</span>${i.note ? " · " + esc(i.note) : ""}</div></div>
+        <div class="fu-go">›</div></div>`;
+    }).join("");
+    $("remindersPanel").innerHTML = head + `<div class="fu-list">${rows}</div>`;
   }
 
   function statTile(cls, icon, label, val, sub, sparkVals) {
@@ -976,6 +1035,7 @@
     $("p_maps").value = p ? p.maps : ""; $("p_website").value = p ? p.website : "";
     $("p_location").value = p ? p.location : ""; $("p_status").value = p ? p.status : "prospekt";
     $("p_deal").value = p && p.deal ? p.deal : ""; $("p_notes").value = p ? p.notes : "";
+    $("p_followup").value = p ? (p.followup || "") : ""; $("p_followNote").value = p ? (p.followNote || "") : "";
     updateDealVisibility("p");
     $("deleteProspectBtn").style.display = p ? "inline-flex" : "none";
     $("prospectOverlay").classList.add("show"); $("p_company").focus();
@@ -986,7 +1046,7 @@
     const id = $("p_id").value;
     const data = { company, person: $("p_person").value.trim(), phone: $("p_phone").value.trim(), email: $("p_email").value.trim(),
       maps: $("p_maps").value.trim(), website: $("p_website").value.trim(), location: $("p_location").value.trim(),
-      status: $("p_status").value, deal: numF($("p_deal").value), notes: $("p_notes").value.trim() };
+      status: $("p_status").value, deal: numF($("p_deal").value), followup: $("p_followup").value, followNote: $("p_followNote").value.trim(), notes: $("p_notes").value.trim() };
     if (id) { const p = state.prospects.find(x => x.id === id); if (p) { Object.assign(p, data); p.demo = false; } toast("Prospekt izmenjen."); }
     else { state.prospects.push(normProspect(Object.assign({ id: uid(), date: new Date().toISOString().slice(0, 10), createdAt: Date.now() }, data))); toast("Prospekt dodat."); }
     save(); $("prospectOverlay").classList.remove("show"); refresh();
@@ -1127,6 +1187,7 @@
     const copyP = t.closest("[data-copyphone]"); if (copyP) { copyText(copyP.dataset.copyphone); return; }
     if (t.closest("[data-openlead]")) { openLeadModal(null); return; }
     if (t.closest("[data-openprospect]")) { openProspectModal(null); return; }
+    const rem = t.closest("[data-openrem]"); if (rem) { const [kind, id] = rem.dataset.openrem.split(":"); if (kind === "prospect") openProspectModal(state.prospects.find(x => x.id === id)); else openLeadModal(state.leads.find(x => x.id === id)); return; }
   });
   function copyText(txt) {
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast("Broj kopiran: " + txt)).catch(() => fallbackCopy(txt));
